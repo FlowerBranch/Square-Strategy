@@ -1,12 +1,22 @@
+package app
+
+import app.Main.stage
+import game.Battleground
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.layout.Pane
+import scalafx.scene.paint.Color.*
 import scalafx.scene.shape.Rectangle
-import scalafx.scene.paint.Color._
 
 object Main extends JFXApp3:
 
   def start() =
+
+    val battleground = Battleground(10, 10)
+    battleground.area.foreach(i => i.foreach(i =>
+      println(i.x)
+      println(i.y)
+    ))
 
     stage = new JFXApp3.PrimaryStage:
       title = "UniqueProjectName"
@@ -30,4 +40,3 @@ object Main extends JFXApp3:
   end start
 
 end Main
-
