@@ -6,7 +6,15 @@ case class Square(val x: Int, val y: Int):
 
   private var highlightStatus = false
   private var lockState = false
+  private var actor: Option[Actor] = None
 
+  def isEmpty = this.actor.isEmpty
+  
+  def getActor: Option[Actor] = actor
+  
+  def addActor(actor: Actor) =
+    this.actor = Some(actor)
+  
   def isHighlighted = highlightStatus
 
   def highlightSwitch() =

@@ -10,14 +10,19 @@ import scalafx.scene.layout.{Background, ColumnConstraints, GridPane, RowConstra
 import scalafx.scene.paint.Color.*
 import scalafx.event.*
 import scalafx.scene.input.*
-import scalafx.Includes._
+import scalafx.Includes.*
+import scalafx.animation.AnimationTimer
 
 object Main extends JFXApp3:
 
   def start() =
 
     val battleground = Battleground(20, 15)
-    var pathToDraw: Option[Seq[Seq[SquareCanvas]]] = None
+    battleground.area.foreach(_.foreach(i =>
+      if i.x % 6 == 0 then
+        i.addActor(Obstacle())
+    ))
+    var pathToDraw: Option[Vector[Square]] = None
 
     val root = new GridPane():
       maxWidth = 1600
@@ -103,31 +108,30 @@ object Main extends JFXApp3:
                     val start = battleground.lockedSquare.head
                     battleground.lockedSquare.head.lockSwitch()
                     battleground.lockedSquare = None
-                    pathToDraw = Some(battleSquares.map(_.filter(j =>
-                      battleground.squaresAlongPath(start, i.square).exists(k => k.x == j.square.x && k.y == j.square.y)
-                    )))
+                    pathToDraw = Some(battleground.squaresAlongPath(start, i.square))
                 case _ =>
                   if i.square.isHighlighted then
                     i.square.highlightSwitch()
-              drawUpdate()
+                drawUpdate()
           }
         ))
       end updateGrid
 
       def drawUpdate() =
-        battleSquares.foreach(_.foreach(i =>
-          if i.square.isHighlighted || i.square.isLocked then
-            i.canvas.graphicsContext2D.setFill(Red)
-            i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
-          else
-            i.canvas.graphicsContext2D.setFill(Blue)
-            i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
-        ))
-        if pathToDraw.isDefined then
-          pathToDraw.head.foreach(_.foreach(i =>
+
+        def drawPath(path: Vector[Square]) =
+          battleSquares.map(_.filter(i =>
+              path.exists(j =>
+              i.square.x == j.x && i.square.y == j.y
+              )))
+            .foreach(_.foreach(i =>
             i.canvas.graphicsContext2D.setFill(Grey)
             i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
           ))
+
+        battleSquares.foreach(_.foreach(i => i.redraw()))
+
+        if pathToDraw.isDefined then drawPath(pathToDraw.head)
 
       end drawUpdate
 
