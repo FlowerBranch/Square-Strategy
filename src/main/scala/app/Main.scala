@@ -6,8 +6,11 @@ import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
 import scalafx.scene.Scene
 import scalafx.scene.canvas.Canvas
-import scalafx.scene.layout.{Background, ColumnConstraints, GridPane, VBox, RowConstraints}
+import scalafx.scene.layout.{Background, ColumnConstraints, GridPane, RowConstraints, VBox}
 import scalafx.scene.paint.Color.*
+import scalafx.event.*
+import scalafx.scene.input.*
+import scalafx.Includes._
 
 object Main extends JFXApp3:
 
@@ -86,6 +89,23 @@ object Main extends JFXApp3:
           battleRow
 
       root.add(battleGrid, 0, 0, 1, 1)
+
+      updateGrid()
+
+      def updateGrid() =
+        battleSquares.foreach(_.foreach(i =>
+          i.handleEvent(MouseEvent.Any) {
+            (me: MouseEvent) =>
+              me.eventType match
+                case MouseEvent.MouseMoved =>
+                  i.graphicsContext2D.setFill(Red)
+                  i.graphicsContext2D.fillRect(0, 0, i.width.toDouble, i.height.toDouble)
+                case _ =>
+                  i.graphicsContext2D.setFill(Blue)
+                  i.graphicsContext2D.fillRect(0, 0, i.width.toDouble, i.height.toDouble)
+          }
+        ))
+      end updateGrid
 
     end drawBattleground
 
