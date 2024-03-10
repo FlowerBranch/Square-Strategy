@@ -2,7 +2,7 @@ package game
 
 import game.Direction.*
 
-class Square(val x: Int, val y: Int):
+case class Square(val x: Int, val y: Int):
 
   private var highlightStatus = false
 

@@ -1,7 +1,7 @@
 package app
 
 import app.Main.stage
-import game.Battleground
+import game.*
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
 import scalafx.scene.Scene
