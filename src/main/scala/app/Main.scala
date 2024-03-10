@@ -24,9 +24,6 @@ object Main extends JFXApp3:
 
     val scene = Scene(parent = root)
 
-    constructBackground()
-    drawBattleground()
-
     stage = new JFXApp3.PrimaryStage:
       title = "Square Strategy"
       width = 800
@@ -34,6 +31,9 @@ object Main extends JFXApp3:
 
     stage.setFullScreen(true)
     stage.scene = scene
+
+    constructBackground()
+    drawBattleground()
 
     def constructBackground() =
 
@@ -65,16 +65,10 @@ object Main extends JFXApp3:
         gridLinesVisible = true
         margin = Insets(3, 3, 3, 3)
 
-      val battleSquares = battleground.area.map(_.map(i =>
-        new Canvas():
-          width = 50
-          height = 50
-          graphicsContext2D.setFill(Blue)
-          graphicsContext2D.fillRect(0, 0, width.toDouble, height.toDouble)
-      ))
+      val battleSquares = battleground.area.map(_.map(i => SquareCanvas(i)))
 
       battleground.area.foreach(i => i.foreach(j =>
-        battleGrid.add(battleSquares(j.x)(j.y), j.x, j.y)
+        battleGrid.add(battleSquares(j.x)(j.y).canvas, j.x, j.y)
       ))
 
       val battleColumn = new ColumnConstraints:
@@ -94,30 +88,32 @@ object Main extends JFXApp3:
 
       def updateGrid() =
         battleSquares.foreach(_.foreach(i =>
-          i.handleEvent(MouseEvent.Any) {
+          i.canvas.handleEvent(MouseEvent.Any) {
             (me: MouseEvent) =>
               me.eventType match
                 case MouseEvent.MouseMoved =>
-                  i.graphicsContext2D.setFill(Red)
-                  i.graphicsContext2D.fillRect(0, 0, i.width.toDouble, i.height.toDouble)
+                  if !i.square.isHighlighted then
+                    i.square.highlightSwitch()
                 case _ =>
-                  i.graphicsContext2D.setFill(Blue)
-                  i.graphicsContext2D.fillRect(0, 0, i.width.toDouble, i.height.toDouble)
+                  if i.square.isHighlighted then
+                    i.square.highlightSwitch()
+              drawUpdate()
           }
         ))
       end updateGrid
 
+      def drawUpdate() =
+        battleSquares.foreach(_.foreach(i =>
+          if i.square.isHighlighted then
+            i.canvas.graphicsContext2D.setFill(Red)
+            i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
+          else
+            i.canvas.graphicsContext2D.setFill(Blue)
+            i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
+        ))
+      end drawUpdate
+
     end drawBattleground
-
-
-
-
-
-
-
-
-
-
 
   end start
 
