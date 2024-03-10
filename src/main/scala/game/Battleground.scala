@@ -9,6 +9,8 @@ class Battleground(val width: Int, val height: Int):
     for i <- 0 until width yield
       for j <- 0 until height yield
         Square(i, j)
+        
+  var lockedSquare: Option[Square] = None
 
   def squaresAlongPath(start: Square, end: Square): Vector[Square] =
 
@@ -36,6 +38,6 @@ class Battleground(val width: Int, val height: Int):
     while currentSquare.yDirectionOf(end).isDefined do
       yMove()
 
-    path.toVector
+    Vector(start) ++ path.toVector ++ Vector(end)
 
   end squaresAlongPath

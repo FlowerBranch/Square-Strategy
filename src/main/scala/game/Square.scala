@@ -5,6 +5,7 @@ import game.Direction.*
 case class Square(val x: Int, val y: Int):
 
   private var highlightStatus = false
+  private var lockState = false
 
   def isHighlighted = highlightStatus
 
@@ -13,6 +14,14 @@ case class Square(val x: Int, val y: Int):
       highlightStatus = false
     else
       highlightStatus = true
+
+  def isLocked = lockState
+  
+  def lockSwitch() =
+    if isLocked then
+      lockState = false
+    else
+      lockState = true
 
   def yDirectionOf(another: Square): Option[Direction] =
     if this.y < another.y then

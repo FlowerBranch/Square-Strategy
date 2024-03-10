@@ -17,6 +17,7 @@ object Main extends JFXApp3:
   def start() =
 
     val battleground = Battleground(20, 15)
+    var pathToDraw: Option[Seq[Seq[SquareCanvas]]] = None
 
     val root = new GridPane():
       maxWidth = 1600
@@ -94,6 +95,17 @@ object Main extends JFXApp3:
                 case MouseEvent.MouseMoved =>
                   if !i.square.isHighlighted then
                     i.square.highlightSwitch()
+                case MouseEvent.MouseClicked =>
+                  if !i.square.isLocked && battleground.lockedSquare.isEmpty then
+                    i.square.lockSwitch()
+                    battleground.lockedSquare = Some(i.square)
+                  else
+                    val start = battleground.lockedSquare.head
+                    battleground.lockedSquare.head.lockSwitch()
+                    battleground.lockedSquare = None
+                    pathToDraw = Some(battleSquares.map(_.filter(j =>
+                      battleground.squaresAlongPath(start, i.square).exists(k => k.x == j.square.x && k.y == j.square.y)
+                    )))
                 case _ =>
                   if i.square.isHighlighted then
                     i.square.highlightSwitch()
@@ -104,13 +116,19 @@ object Main extends JFXApp3:
 
       def drawUpdate() =
         battleSquares.foreach(_.foreach(i =>
-          if i.square.isHighlighted then
+          if i.square.isHighlighted || i.square.isLocked then
             i.canvas.graphicsContext2D.setFill(Red)
             i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
           else
             i.canvas.graphicsContext2D.setFill(Blue)
             i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
         ))
+        if pathToDraw.isDefined then
+          pathToDraw.head.foreach(_.foreach(i =>
+            i.canvas.graphicsContext2D.setFill(Grey)
+            i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
+          ))
+
       end drawUpdate
 
     end drawBattleground
