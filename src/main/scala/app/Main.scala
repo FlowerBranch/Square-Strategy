@@ -17,11 +17,8 @@ object Main extends JFXApp3:
 
   def start() =
 
-    val battleground = Battleground(20, 15)
-    battleground.area.foreach(_.foreach(i =>
-      if i.x % 6 == 0 then
-        i.addActor(Obstacle())
-    ))
+    val battle = Battle()
+    
     var pathToDraw: Option[Vector[Square]] = None
 
     val root = new GridPane():
@@ -71,21 +68,21 @@ object Main extends JFXApp3:
         gridLinesVisible = true
         margin = Insets(3, 3, 3, 3)
 
-      val battleSquares = battleground.area.map(_.map(i => SquareCanvas(i)))
+      val battleSquares = battle.battleground.area.map(_.map(i => SquareCanvas(i)))
 
-      battleground.area.foreach(i => i.foreach(j =>
+      battle.battleground.area.foreach(i => i.foreach(j =>
         battleGrid.add(battleSquares(j.x)(j.y).canvas, j.x, j.y)
       ))
 
       val battleColumn = new ColumnConstraints:
-        percentWidth = 1.0 / battleground.width.toDouble * 100.0
+        percentWidth = 1.0 / battle.battleground.width.toDouble * 100.0
       val battleRow = new RowConstraints:
-        percentHeight = 1.0 / battleground.height.toDouble * 100.0
+        percentHeight = 1.0 / battle.battleground.height.toDouble * 100.0
       battleGrid.columnConstraints =
-        for i <- 0 until battleground.width yield
+        for i <- 0 until battle.battleground.width yield
           battleColumn
       battleGrid.rowConstraints =
-        for i <- 0 until battleground.height yield
+        for i <- 0 until battle.battleground.height yield
           battleRow
 
       root.add(battleGrid, 0, 0, 1, 1)
@@ -101,14 +98,14 @@ object Main extends JFXApp3:
                   if !i.square.isHighlighted then
                     i.square.highlightSwitch()
                 case MouseEvent.MouseClicked =>
-                  if !i.square.isLocked && battleground.lockedSquare.isEmpty then
+                  if !i.square.isLocked && battle.battleground.lockedSquare.isEmpty then
                     i.square.lockSwitch()
-                    battleground.lockedSquare = Some(i.square)
+                    battle.battleground.lockedSquare = Some(i.square)
                   else
-                    val start = battleground.lockedSquare.head
-                    battleground.lockedSquare.head.lockSwitch()
-                    battleground.lockedSquare = None
-                    pathToDraw = Some(battleground.squaresAlongPath(start, i.square))
+                    val start = battle.battleground.lockedSquare.head
+                    battle.battleground.lockedSquare.head.lockSwitch()
+                    battle.battleground.lockedSquare = None
+                    pathToDraw = Some(battle.battleground.squaresAlongPath(start, i.square))
                 case _ =>
                   if i.square.isHighlighted then
                     i.square.highlightSwitch()
