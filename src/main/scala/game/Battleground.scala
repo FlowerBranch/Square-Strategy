@@ -39,6 +39,33 @@ class Battleground(val width: Int, val height: Int):
     area.foreach(_.foreach(_.usedInPath = false))
     var path = Buffer[Square]()
     var currentSquare = start
+
+    def addToPath(): Unit =
+      if currentSquare != start && currentSquare != end then
+        path += currentSquare
+      else
+        ()
+
+    def move() =
+      currentSquare.usedInPath = true
+      currentSquare = currentSquare.nonDiagonalNeighbors
+        .filter(i => i.isEmpty && !i.usedInPath && i.emptyNeighbors.size > 1)
+        .map(i => (i, i.distanceTo(end)))
+        .minBy(p => p._2)._1
+      addToPath()
+
+    while !end.nonDiagonalNeighbors.exists(i => path.contains(i)) do
+      move()
+
+    Vector(start) ++ path.distinct.toVector ++ Vector(end)
+  end squaresAlongPath
+
+/*    WHY IS MY LIFE LIKE THIS, ALL THE HARD WORK FOR NOTHING
+  def squaresAlongPath(start: Square, end: Square): Vector[Square] =
+
+    area.foreach(_.foreach(_.usedInPath = false))
+    var path = Buffer[Square]()
+    var currentSquare = start
     var firstEmptying = true
     end.usedInPath = true
 
@@ -100,5 +127,4 @@ class Battleground(val width: Int, val height: Int):
       move()
 
     path.toVector ++ Vector(end)
-
-  end squaresAlongPath
+*/

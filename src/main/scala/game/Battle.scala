@@ -6,4 +6,4 @@ class Battle:
 
   val battleground = Battleground(20, 15)
 
-  battleground.addObstacles(20)
+  battleground.addObstacles(60)

@@ -55,6 +55,9 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
            this.battleground.getSquare(this.x, this.y - 1),
            this.battleground.getSquare(this.x, this.y + 1)
     ).flatten
+    
+  def emptyNeighbors =
+    nonDiagonalNeighbors.filter(i => i.isEmpty)
 
   def distanceTo(another: Square) =
     sqrt(pow(abs(another.x - this.x), 2) + pow(abs(another.y - this.y), 2))
