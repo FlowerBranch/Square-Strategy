@@ -1,11 +1,13 @@
 package game
 
 import game.Direction.*
+import scala.math.*
 
-case class Square(val x: Int, val y: Int):
+case class Square(val x: Int, val y: Int, val battleground: Battleground):
 
   private var highlightStatus = false
   private var lockState = false
+  var usedInPath = false
   private var actor: Option[Actor] = None
 
   def isEmpty = this.actor.isEmpty
@@ -46,3 +48,13 @@ case class Square(val x: Int, val y: Int):
       Some(Left)
     else
       None
+
+  def nonDiagonalNeighbors: Vector[Square] =
+    Vector(this.battleground.getSquare(this.x - 1, this.y),
+           this.battleground.getSquare(this.x + 1, this.y),
+           this.battleground.getSquare(this.x, this.y - 1),
+           this.battleground.getSquare(this.x, this.y + 1)
+    ).flatten
+
+  def distanceTo(another: Square) =
+    sqrt(pow(abs(another.x - this.x), 2) + pow(abs(another.y - this.y), 2))

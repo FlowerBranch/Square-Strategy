@@ -18,7 +18,7 @@ object Main extends JFXApp3:
   def start() =
 
     val battle = Battle()
-    
+
     var pathToDraw: Option[Vector[Square]] = None
 
     val root = new GridPane():
