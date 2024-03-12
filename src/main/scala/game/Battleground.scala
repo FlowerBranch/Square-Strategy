@@ -44,6 +44,32 @@ class Battleground(val width: Int, val height: Int):
       i.x == x && i.y == y
     )).headOption
 
+  def squaresWithinRadius(of: Square, depth: Int): Vector[(Square, Int)] =
+
+    val usedSquares = Buffer[Square]()
+
+    def squaresForNextDepth(squares: Vector[Square]): Vector[Square] =
+      squares.flatMap(i => i.emptyNeighbors.filterNot(i => usedSquares.contains(i))).distinct
+
+    def move(omstart: (Vector[Square], Int)): Vector[(Square, Int)] =
+      val thisDepth = omstart._1 zip Vector.tabulate(omstart._1.size)(i => omstart._2)
+      usedSquares ++= omstart._1.toBuffer
+      if omstart._2 == depth then
+        thisDepth
+      else
+        val nextDepth = squaresForNextDepth(omstart._1)
+        thisDepth ++ move((nextDepth, omstart._2 + 1))
+
+    move((Vector(of), 0))
+    
+  end squaresWithinRadius
+
+  def squaresAlongPath(start: Square, end: Square): Vector[Square] = ???
+
+    
+    
+  end squaresAlongPath
+/*
   def squaresAlongPath(start: Square, end: Square): Vector[Square] =
 
     val dangerSquares = tunnelSquares.filterNot(i => i.contains(end) || i.contains(start)).flatten
@@ -56,8 +82,8 @@ class Battleground(val width: Int, val height: Int):
       if currentSquare != start && currentSquare != end then
         path += currentSquare
         usedSquares += currentSquare
-        if usedSquares.length > 6 then
-          usedSquares = usedSquares.tail
+/*        if usedSquares.length > 10 then
+          usedSquares = usedSquares.tail*/
       else
         ()
 
@@ -71,12 +97,12 @@ class Battleground(val width: Int, val height: Int):
         .minBy(p => p._2)._1
       addToPath()
 
-    while !end.nonDiagonalNeighbors.exists(i => path.contains(i)) do
+    while !end.nonDiagonalNeighbors.exists(i => path.contains(i)) && currentSquare != end do
       move()
 
     Vector(start) ++ path.distinct.toVector ++ Vector(end)
   end squaresAlongPath
-
+*/
 /*    WHY IS MY LIFE LIKE THIS, ALL THE HARD WORK FOR NOTHING
   def squaresAlongPath(start: Square, end: Square): Vector[Square] =
 

@@ -63,3 +63,5 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
 
   def distanceTo(another: Square) =
     sqrt(pow(abs(another.x - this.x), 2) + pow(abs(another.y - this.y), 2))
+
+  override def toString: String = s"(${this.x}, ${this.y})"

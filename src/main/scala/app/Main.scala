@@ -105,7 +105,7 @@ object Main extends JFXApp3:
                     val start = battle.battleground.lockedSquare.head
                     battle.battleground.lockedSquare.head.lockSwitch()
                     battle.battleground.lockedSquare = None
-                    pathToDraw = Some(battle.battleground.squaresAlongPath(start, i.square))
+                    pathToDraw = Some(battle.battleground.squaresWithinRadius(start, 10).map(_._1))//Some(battle.battleground.squaresAlongPath(start, i.square))
                 case _ =>
                   if i.square.isHighlighted then
                     i.square.highlightSwitch()
