@@ -11,10 +11,20 @@ class Battleground(val width: Int, val height: Int):
     for i <- 0 until width yield
       for j <- 0 until height yield
         Square(i, j, this)
-        
+
   var lockedSquare: Option[Square] = None
 
   var squaresWithObstacles = Buffer[Square]()
+
+  def followTunnel(start: Square): Vector[Square] =
+    val tunnel = Buffer[Square]()
+    var currentSquare = start
+    while currentSquare.emptyNeighbors.filterNot(tunnel.contains(_)).size <= 1 do
+      tunnel += currentSquare
+      currentSquare = currentSquare.emptyNeighbors.filterNot(tunnel.contains(_)).head
+    tunnel.toVector
+
+  val tunnelSquares = area.flatMap(_.filter(_.emptyNeighbors.size <= 1)).map(followTunnel(_))
 
   def addObstacles(amount: Int) =
     val obstacleLocations: Seq[(Int, Int)] =
@@ -36,20 +46,27 @@ class Battleground(val width: Int, val height: Int):
 
   def squaresAlongPath(start: Square, end: Square): Vector[Square] =
 
-    area.foreach(_.foreach(_.usedInPath = false))
+    val dangerSquares = tunnelSquares.filterNot(i => i.contains(end) || i.contains(start)).flatten
+
+    var usedSquares = Buffer[Square](start)
     var path = Buffer[Square]()
     var currentSquare = start
 
     def addToPath(): Unit =
       if currentSquare != start && currentSquare != end then
         path += currentSquare
+        usedSquares += currentSquare
+        if usedSquares.length > 6 then
+          usedSquares = usedSquares.tail
       else
         ()
 
     def move() =
-      currentSquare.usedInPath = true
       currentSquare = currentSquare.nonDiagonalNeighbors
-        .filter(i => i.isEmpty && !i.usedInPath && i.emptyNeighbors.size > 1)
+        .filter(i => i.isEmpty
+          && !usedSquares.contains(i)
+          && i.emptyNeighborsExcluding(usedSquares.toVector ++ Vector(i)).nonEmpty
+          && !dangerSquares.contains(i))
         .map(i => (i, i.distanceTo(end)))
         .minBy(p => p._2)._1
       addToPath()

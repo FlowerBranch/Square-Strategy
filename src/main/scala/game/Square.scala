@@ -7,7 +7,6 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
 
   private var highlightStatus = false
   private var lockState = false
-  var usedInPath = false
   private var actor: Option[Actor] = None
 
   def isEmpty = this.actor.isEmpty
@@ -58,6 +57,9 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
     
   def emptyNeighbors =
     nonDiagonalNeighbors.filter(i => i.isEmpty)
+    
+  def emptyNeighborsExcluding(squares: Vector[Square]) =
+    emptyNeighbors.filterNot(squares.contains(_))
 
   def distanceTo(another: Square) =
     sqrt(pow(abs(another.x - this.x), 2) + pow(abs(another.y - this.y), 2))
