@@ -20,6 +20,7 @@ object Main extends JFXApp3:
     val battle = Battle()
 
     var pathToDraw: Option[Vector[Square]] = None
+    var movementRadius: Option[Vector[(Square, Int)]] = None
 
     val root = new GridPane():
       maxWidth = 1600
@@ -101,11 +102,12 @@ object Main extends JFXApp3:
                   if !i.square.isLocked && battle.battleground.lockedSquare.isEmpty then
                     i.square.lockSwitch()
                     battle.battleground.lockedSquare = Some(i.square)
-                  else
                     val start = battle.battleground.lockedSquare.head
+                    movementRadius = Some(battle.battleground.squaresWithinRadius(start, 20))
+                  else
                     battle.battleground.lockedSquare.head.lockSwitch()
                     battle.battleground.lockedSquare = None
-                    pathToDraw = Some(battle.battleground.squaresWithinRadius(start, 10).map(_._1))//Some(battle.battleground.squaresAlongPath(start, i.square))
+                    pathToDraw = Some(battle.battleground.squaresAlongPath(i.square, movementRadius.head))
                 case _ =>
                   if i.square.isHighlighted then
                     i.square.highlightSwitch()
@@ -116,6 +118,15 @@ object Main extends JFXApp3:
 
       def drawUpdate() =
 
+        def drawRadius(radius: Vector[(Square, Int)]) =
+          battleSquares.map(_.filter(i =>
+              radius.map(_._1).exists(j =>
+              i.square.x == j.x && i.square.y == j.y
+              )))
+            .foreach(_.foreach(i =>
+            i.canvas.graphicsContext2D.setFill(LightBlue)
+            i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
+          ))
         def drawPath(path: Vector[Square]) =
           battleSquares.map(_.filter(i =>
               path.exists(j =>
@@ -128,6 +139,7 @@ object Main extends JFXApp3:
 
         battleSquares.foreach(_.foreach(i => i.redraw()))
 
+        if movementRadius.isDefined then drawRadius(movementRadius.head)
         if pathToDraw.isDefined then drawPath(pathToDraw.head)
 
       end drawUpdate

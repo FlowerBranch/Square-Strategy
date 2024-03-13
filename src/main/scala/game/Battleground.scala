@@ -2,8 +2,8 @@ package game
 
 import scala.collection.mutable.Buffer
 import game.Direction.*
-
 import scala.util.Random
+import scala.math.*
 
 class Battleground(val width: Int, val height: Int):
 
@@ -51,23 +51,33 @@ class Battleground(val width: Int, val height: Int):
     def squaresForNextDepth(squares: Vector[Square]): Vector[Square] =
       squares.flatMap(i => i.emptyNeighbors.filterNot(i => usedSquares.contains(i))).distinct
 
-    def move(omstart: (Vector[Square], Int)): Vector[(Square, Int)] =
+    def squaresUntilDepth(omstart: (Vector[Square], Int)): Vector[(Square, Int)] =
       val thisDepth = omstart._1 zip Vector.tabulate(omstart._1.size)(i => omstart._2)
       usedSquares ++= omstart._1.toBuffer
       if omstart._2 == depth then
         thisDepth
       else
         val nextDepth = squaresForNextDepth(omstart._1)
-        thisDepth ++ move((nextDepth, omstart._2 + 1))
+        thisDepth ++ squaresUntilDepth((nextDepth, omstart._2 + 1))
 
-    move((Vector(of), 0))
+    squaresUntilDepth((Vector(of), 0))
     
   end squaresWithinRadius
 
-  def squaresAlongPath(start: Square, end: Square): Vector[Square] = ???
+  def squaresAlongPath(end: Square, radius: Vector[(Square, Int)]): Vector[Square] =
 
+    def moveToOrigin(from: (Square, Int)): Vector[Square] =
+      if from._2 == 0 then
+        Vector(from._1)
+      else
+        val lowerDepthRadius = radius.filter(_._2 == from._2 - 1)
+        Vector(from._1) ++ moveToOrigin(lowerDepthRadius.find(p => from._1.emptyNeighbors.contains(p._1)).head)
     
-    
+    if !radius.exists(_._1 == end) then
+      throw Exception("Chosen square outside radius of movement")
+    else
+      moveToOrigin(radius.find(_._1 == end).head)
+      
   end squaresAlongPath
 /*
   def squaresAlongPath(start: Square, end: Square): Vector[Square] =
@@ -82,8 +92,8 @@ class Battleground(val width: Int, val height: Int):
       if currentSquare != start && currentSquare != end then
         path += currentSquare
         usedSquares += currentSquare
-/*        if usedSquares.length > 10 then
-          usedSquares = usedSquares.tail*/
+        if usedSquares.length > 10 then
+          usedSquares = usedSquares.tail
       else
         ()
 
