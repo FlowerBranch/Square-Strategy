@@ -16,16 +16,6 @@ class Battleground(val width: Int, val height: Int):
 
   var squaresWithObstacles = Buffer[Square]()
 
-  def followTunnel(start: Square): Vector[Square] =
-    val tunnel = Buffer[Square]()
-    var currentSquare = start
-    while currentSquare.emptyNeighbors.filterNot(tunnel.contains(_)).size <= 1 do
-      tunnel += currentSquare
-      currentSquare = currentSquare.emptyNeighbors.filterNot(tunnel.contains(_)).head
-    tunnel.toVector
-
-  val tunnelSquares = area.flatMap(_.filter(_.emptyNeighbors.size <= 1)).map(followTunnel(_))
-
   def addObstacles(amount: Int) =
     val obstacleLocations: Seq[(Int, Int)] =
       for i <- 0 until amount yield
@@ -76,10 +66,20 @@ class Battleground(val width: Int, val height: Int):
     if !radius.exists(_._1 == end) then
       throw Exception("Chosen square outside radius of movement")
     else
-      moveToOrigin(radius.find(_._1 == end).head)
+      moveToOrigin(radius.find(_._1 == end).head).reverse
       
   end squaresAlongPath
 /*
+  def followTunnel(start: Square): Vector[Square] =
+    val tunnel = Buffer[Square]()
+    var currentSquare = start
+    while currentSquare.emptyNeighbors.filterNot(tunnel.contains(_)).size <= 1 do
+      tunnel += currentSquare
+      currentSquare = currentSquare.emptyNeighbors.filterNot(tunnel.contains(_)).head
+    tunnel.toVector
+
+  val tunnelSquares = area.flatMap(_.filter(_.emptyNeighbors.size <= 1)).map(followTunnel(_))
+
   def squaresAlongPath(start: Square, end: Square): Vector[Square] =
 
     val dangerSquares = tunnelSquares.filterNot(i => i.contains(end) || i.contains(start)).flatten
