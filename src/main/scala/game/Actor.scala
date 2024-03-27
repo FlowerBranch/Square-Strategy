@@ -5,19 +5,34 @@ import scala.collection.mutable.Buffer
 sealed trait Actor:
 
   val canBeMovedThrough: Boolean
+  
+  def getAgility: Int
+  
+  def move(to: Square): Unit
 
 end Actor
 
 case class Obstacle() extends Actor:
 
   val canBeMovedThrough = false
+  
+  def getAgility = 0
+  
+  def move(to: Square) = ()
 
 case class Character(val name: String, startHP: Int, private val armor: Int, private val agility: Int) extends Actor:
 
   val canBeMovedThrough: Boolean = false
+  private var square: Option[Square] = None
   private val maxHP = startHP
   private var hp = startHP
   private val statuses = Buffer[Status]()
+  
+  def move(to: Square) =
+    if this.square.isDefined then
+      this.square.head.removeActor(this)
+    to.addActor(this)
+    square = Some(to)
   
   def getAgility = this.agility
 

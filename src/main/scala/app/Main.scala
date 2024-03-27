@@ -20,7 +20,6 @@ object Main extends JFXApp3:
     val battle = Battle()
 
     var pathToDraw: Option[Vector[Square]] = None
-    var movementRadius: Option[Vector[(Square, Int)]] = None
 
     val root = new GridPane():
       maxWidth = 1600
@@ -99,15 +98,21 @@ object Main extends JFXApp3:
                   if !i.square.isHighlighted then
                     i.square.highlightSwitch()
                 case MouseEvent.MouseClicked =>
-                  if !i.square.isLocked && battle.battleground.lockedSquare.isEmpty then
+                  if !i.square.isLocked && i.square.hasCharacter && battle.battleground.lockedSquare.isEmpty then
                     i.square.lockSwitch()
                     battle.battleground.lockedSquare = Some(i.square)
                     val start = battle.battleground.lockedSquare.head
-                    movementRadius = Some(battle.battleground.squaresWithinRadius(start, 20))
+                    val agility = i.square.getActor.head.getAgility
+                    battle.battleground.movementRadius = Some(battle.battleground.squaresWithinRadius(start, agility))
+                  else if battle.battleground.lockedSquare.isDefined then
+                    pathToDraw = Some(battle.battleground.squaresAlongPath(i.square, battle.battleground.movementRadius.head))
+                    if pathToDraw.head.contains(i.square) then
+                      battle.battleground.lockedSquare.head.getActor.head.move(i.square)
+                      battle.battleground.lockedSquare.head.lockSwitch()
+                      battle.battleground.lockedSquare = None
+                      battle.battleground.movementRadius = None
                   else
-                    battle.battleground.lockedSquare.head.lockSwitch()
-                    battle.battleground.lockedSquare = None
-                    pathToDraw = Some(battle.battleground.squaresAlongPath(i.square, movementRadius.head))
+                    ()
                 case _ =>
                   if i.square.isHighlighted then
                     i.square.highlightSwitch()
@@ -118,7 +123,7 @@ object Main extends JFXApp3:
 
       def drawUpdate() =
 
-        def drawRadius(radius: Vector[(Square, Int)]) =
+        /*def drawRadius(radius: Vector[(Square, Int)]) =
           battleSquares.map(_.filter(i =>
               radius.map(_._1).exists(j =>
               i.square.x == j.x && i.square.y == j.y
@@ -126,7 +131,7 @@ object Main extends JFXApp3:
             .foreach(_.foreach(i =>
             i.canvas.graphicsContext2D.setFill(LightBlue)
             i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
-          ))
+          ))*/
         def drawPath(path: Vector[Square]) =
           battleSquares.map(_.filter(i =>
               path.exists(j =>
@@ -138,8 +143,6 @@ object Main extends JFXApp3:
           ))
 
         battleSquares.foreach(_.foreach(i => i.redraw()))
-
-        if movementRadius.isDefined then drawRadius(movementRadius.head)
         if pathToDraw.isDefined then drawPath(pathToDraw.head)
 
       end drawUpdate

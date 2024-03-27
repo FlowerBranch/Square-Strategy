@@ -13,9 +13,15 @@ class Battleground(val width: Int, val height: Int):
         Square(i, j, this)
 
   var lockedSquare: Option[Square] = None
-
+  var movementRadius: Option[Vector[(Square, Int)]] = None
   var squaresWithObstacles = Buffer[Square]()
 
+  def getCurrentRadius: Vector[Square] =
+    if movementRadius.isDefined then
+      movementRadius.head.map(_._1)
+    else
+      Vector()
+  
   def addObstacles(amount: Int) =
     val obstacleLocations: Seq[(Int, Int)] =
       for i <- 0 until amount yield
@@ -23,8 +29,9 @@ class Battleground(val width: Int, val height: Int):
 
     area.foreach(_.foreach(i =>
       if obstacleLocations.exists(j => i.x == j._1 && i.y == j._2) then
-        i.addActor(Obstacle())
-        squaresWithObstacles += i
+        if i.isEmpty then
+          i.addActor(Obstacle())
+          squaresWithObstacles += i
       else
         ()
     ))
@@ -57,7 +64,7 @@ class Battleground(val width: Int, val height: Int):
   def squaresAlongPath(end: Square, radius: Vector[(Square, Int)]): Vector[Square] =
 
     def moveToOrigin(from: (Square, Int)): Vector[Square] =
-      if from._2 == 0 then
+      if from._2 == 1 then
         Vector(from._1)
       else
         val lowerDepthRadius = radius.filter(_._2 == from._2 - 1)
@@ -66,7 +73,7 @@ class Battleground(val width: Int, val height: Int):
     if !radius.exists(_._1 == end) then
       throw Exception("Chosen square outside radius of movement")
     else
-      moveToOrigin(radius.find(_._1 == end).head).reverse
+      (moveToOrigin(radius.find(_._1 == end).head) ++ Vector(radius.find(p => p._2 == 0).head._1)).reverse
       
   end squaresAlongPath
 /*

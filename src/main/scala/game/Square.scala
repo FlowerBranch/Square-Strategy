@@ -10,11 +10,22 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
   private var actor: Option[Actor] = None
 
   def isEmpty = this.actor.isEmpty
-  
+
+  def hasCharacter =
+    if this.actor.isDefined then
+      this.actor.head match
+        case character: Character => true
+        case _                    => false
+    else
+      false
+      
   def getActor: Option[Actor] = actor
   
   def addActor(actor: Actor) =
     this.actor = Some(actor)
+  
+  def removeActor(actor: Actor) =
+    this.actor = None
   
   def isHighlighted = highlightStatus
 
