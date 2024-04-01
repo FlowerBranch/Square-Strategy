@@ -12,10 +12,26 @@ import scalafx.event.*
 import scalafx.scene.input.*
 import scalafx.Includes.*
 import scalafx.animation.AnimationTimer
+import scalafx.scene.control.Label
 
 object Main extends JFXApp3:
 
   def start() =
+    def makeGrid(ofDimX: Int, ofDimY: Int) =
+      val grid =  new GridPane():
+        gridLinesVisible = true
+      val column = new ColumnConstraints:
+        percentWidth = 100.0 / ofDimX.toDouble
+      val row = new RowConstraints:
+        percentHeight = 100.0 / ofDimY.toDouble
+      grid.columnConstraints =
+        for i <- 0 until ofDimX yield
+          column
+      grid.rowConstraints =
+        for i <- 0 until ofDimY yield
+          row
+      grid
+    end makeGrid
 
     val battle = Battle()
 
@@ -38,18 +54,54 @@ object Main extends JFXApp3:
     constructBackground()
     drawBattleground()
 
+    def drawUI =
+
+      val infoBox = makeGrid(1, 4)
+
+      val playerBox = makeGrid(2, 2)
+      val enemyBox = makeGrid(2, 2)
+
+      infoBox.add(playerBox, 0, 0, 1, 1)
+      infoBox.add(enemyBox, 0, 3, 1, 1)
+
+      def makeCharacterDisplay(of: Character) =
+        
+        val characterBox = makeGrid(2, 2)
+        characterBox.margin = Insets(3, 3, 3, 3)
+        val shifter = "    "
+        val portrait = new Canvas():
+          width = 50
+          height = 50
+          graphicsContext2D.setFill(Black)
+          graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
+        val name = Label(shifter + of.name)
+        val health = Label(shifter + s"HP: ${of.currentHP}/${of.maxHealth}")
+        val statuses = Label(shifter + "Status: " + of.getStatus.mkString)
+        characterBox.add(portrait, 0, 0, 1, 1)
+        characterBox.add(name, 1, 0, 1, 1)
+        characterBox.add(health, 0, 1, 1, 1)
+        characterBox.add(statuses, 1, 1, 1, 1)
+        characterBox
+        
+      end makeCharacterDisplay
+
+      val goodGuyBoxes = battle.playerTeam.map(makeCharacterDisplay(_))
+
+      playerBox.add(goodGuyBoxes(0), 0, 0, 1, 1)
+      playerBox.add(goodGuyBoxes(1), 1, 0, 1, 1)
+      playerBox.add(goodGuyBoxes(2), 0, 1, 1, 1)
+      playerBox.add(goodGuyBoxes(3), 1, 1, 1, 1)
+
+      infoBox
+
     def constructBackground() =
 
       val backdrop = new Canvas():
         width = 1600
         height = 900
-        graphicsContext2D.setFill(Black)
+        graphicsContext2D.setFill(Green)
         graphicsContext2D.fillRect(0, 0, width.toDouble, height.toDouble)
-      val sideBox = new VBox():
-        background = Background.fill(Green)
-
-      root.add(backdrop, 0, 0, 1, 2)
-      root.add(sideBox, 1, 0, 1, 1)
+      val sideBox = drawUI
 
       val row0 = new RowConstraints:
         percentHeight = 100
@@ -60,13 +112,15 @@ object Main extends JFXApp3:
       root.rowConstraints = Array(row0)
       root.columnConstraints = Array(column0, column1)
 
+      root.add(backdrop, 0, 0, 2, 1)
+      root.add(sideBox, 1, 0, 1, 1)
+
     end constructBackground
 
     def drawBattleground() =
 
-      val battleGrid = new GridPane():
-        gridLinesVisible = true
-        margin = Insets(3, 3, 3, 3)
+      val battleGrid = makeGrid(battle.battleground.width, battle.battleground.height)
+      battleGrid.margin = Insets(3, 3, 3, 3)
 
       val battleSquares = battle.battleground.area.map(_.map(i => SquareCanvas(i)))
 
@@ -74,18 +128,7 @@ object Main extends JFXApp3:
         battleGrid.add(battleSquares(j.x)(j.y).canvas, j.x, j.y)
       ))
 
-      val battleColumn = new ColumnConstraints:
-        percentWidth = 1.0 / battle.battleground.width.toDouble * 100.0
-      val battleRow = new RowConstraints:
-        percentHeight = 1.0 / battle.battleground.height.toDouble * 100.0
-      battleGrid.columnConstraints =
-        for i <- 0 until battle.battleground.width yield
-          battleColumn
-      battleGrid.rowConstraints =
-        for i <- 0 until battle.battleground.height yield
-          battleRow
-
-      root.add(battleGrid, 0, 0, 1, 1)
+      root.add(battleGrid, 0, 0, 1, 2)
 
       updateGrid()
 

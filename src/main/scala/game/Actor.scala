@@ -26,7 +26,7 @@ case class Character(val name: String, startHP: Int, private val armor: Int, pri
   private var square: Option[Square] = None
   private val maxHP = startHP
   private var hp = startHP
-  private val statuses = Buffer[Status]()
+  private val status: Option[Status] = None
   
   def move(to: Square) =
     if this.square.isDefined then
@@ -35,6 +35,12 @@ case class Character(val name: String, startHP: Int, private val armor: Int, pri
     square = Some(to)
   
   def getAgility = this.agility
+  
+  def getStatus = status
+  
+  def maxHealth = this.maxHP
+  
+  def currentHP = this.hp
 
   def takeDamage(amount: Int) =
     hp = max(hp - max(0, amount - armor), 0)
