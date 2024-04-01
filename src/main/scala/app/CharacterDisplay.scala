@@ -48,5 +48,11 @@ class CharacterDisplay(of: Character):
   characterBox.add(status, 1, 1, 1, 1)
   
   def update() =
+    if characterBox.children.nonEmpty then
+      characterBox.children.remove(0, characterBox.children.size - 1)
     health = Label(shifter + s"HP: ${of.currentHP}/${of.maxHealth}")
     status = Label(shifter + "Status: " + of.getStatus.mkString)
+    characterBox.add(portrait, 0, 0, 1, 1)
+    characterBox.add(name, 1, 0, 1, 1)
+    characterBox.add(health, 0, 1, 1, 1)
+    characterBox.add(status, 1, 1, 1, 1)

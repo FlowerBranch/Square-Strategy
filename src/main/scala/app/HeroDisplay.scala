@@ -5,15 +5,15 @@ import scalafx.scene.canvas.Canvas
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.paint.Color.{Black, Blue}
 
-class HeroDisplay(of: Character):
-  
+class HeroDisplay(hero: Character):
+
   val heroBox = makeGrid(4, 4)
   heroBox.gridLinesVisible = false
-  
+
   val portrait = new Canvas():
     width = 50
     height = 50
-    if of.battle.playerTeam.contains(of) then
+    if hero.battle.playerTeam.contains(hero) then
       graphicsContext2D.setFill(Blue)
       graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
     else
@@ -22,14 +22,14 @@ class HeroDisplay(of: Character):
 
   heroBox.add(portrait, 0, 0, 1, 1)
 
-  val name = Label(of.name)
+  val name = Label(hero.name)
   heroBox.add(name, 1, 0, 1, 1)
 
   val backButton = new Button("Return"):
     onAction = (event) =>
-      of.battle.battleground.lockedSquare.head.lockSwitch()
-      of.battle.battleground.lockedSquare = None
-      of.battle.battleground.movementRadius = None
+      hero.battle.battleground.lockedSquare.head.lockSwitch()
+      hero.battle.battleground.lockedSquare = None
+      hero.battle.battleground.movementRadius = None
 
   heroBox.add(backButton, 0, 1, 1, 1)
 
@@ -46,9 +46,9 @@ class HeroDisplay(of: Character):
   def makeAbilityButton(of: Ability) =
     val button = new Button(of.name):
       onAction = (event) =>
-        ()
+        of.use(hero)
     button
 
-  val abilityButtons = of.getAbilities.map(makeAbilityButton(_))
+  val abilityButtons = hero.getAbilities.map(makeAbilityButton(_))
 
   heroBox.add(abilityButtons(0), 1, 2, 1, 1)

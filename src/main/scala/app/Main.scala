@@ -128,7 +128,7 @@ object Main extends JFXApp3:
                     i.square.highlightSwitch()
 
                 case MouseEvent.MouseClicked =>
-                  if !i.square.isLocked && i.square.hasCharacter && battle.battleground.lockedSquare.isEmpty then
+                  if !i.square.isLocked && battle.playerTeam.exists(j => Some(j) == i.square.getActor) && battle.battleground.lockedSquare.isEmpty then
                     i.square.lockSwitch()
                     battle.battleground.lockedSquare = Some(i.square)
                     val start = battle.battleground.lockedSquare.head
@@ -171,7 +171,7 @@ object Main extends JFXApp3:
           if battle.battleground.lockedSquare.isDefined then
             if heroBoxController.children.nonEmpty then
               heroBoxController.children.remove(heroBoxController.children.size - 1)
-            heroBoxController.add(HeroDisplay(battle.playerTeam.find(_.location == battle.battleground.lockedSquare).head).heroBox, 0, 1, 1, 1)
+            heroBoxController.add(HeroDisplay(battle.playerTeam.find(_.location == battle.battleground.lockedSquare).head).heroBox, 0, 0, 1, 1)
           else
             if heroBoxController.children.nonEmpty then
               heroBoxController.children.remove(heroBoxController.children.size - 1)
