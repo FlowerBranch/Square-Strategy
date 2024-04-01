@@ -1,6 +1,5 @@
 package game
 import scala.math.*
-import scala.collection.mutable.Buffer
 
 sealed trait Actor:
 
@@ -20,7 +19,7 @@ case class Obstacle() extends Actor:
   
   def move(to: Square) = ()
 
-case class Character(val name: String, startHP: Int, private val armor: Int, private val agility: Int) extends Actor:
+case class Character(battle: Battle, val name: String, startHP: Int, private val armor: Int, private val agility: Int) extends Actor:
 
   val canBeMovedThrough: Boolean = false
   private var square: Option[Square] = None
@@ -33,6 +32,8 @@ case class Character(val name: String, startHP: Int, private val armor: Int, pri
       this.square.head.removeActor(this)
     to.addActor(this)
     square = Some(to)
+    
+  def location = square
   
   def getAgility = this.agility
   

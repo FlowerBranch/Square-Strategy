@@ -21,8 +21,12 @@ class SquareCanvas(val square: Square):
           graphicsContext2D.setFill(Grey)
           graphicsContext2D.fillRect(0, 10, width.toDouble, height.toDouble - 10)
         case c: Character =>
-          graphicsContext2D.setFill(Black)
-          graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
+          if c.battle.playerTeam.contains(c) then
+            graphicsContext2D.setFill(Blue)
+            graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
+          else
+            graphicsContext2D.setFill(Black)
+            graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
 
   def redraw() =
     if square.isHighlighted || square.isLocked then
@@ -40,5 +44,9 @@ class SquareCanvas(val square: Square):
           canvas.graphicsContext2D.setFill(Grey)
           canvas.graphicsContext2D.fillRect(0, 10, canvas.width.toDouble, canvas.height.toDouble - 10)
         case c: Character =>
-          canvas.graphicsContext2D.setFill(Black)
-          canvas.graphicsContext2D.fillOval(0, 10, canvas.width.toDouble, canvas.height.toDouble - 10)
+          if c.battle.playerTeam.contains(c) then
+            canvas.graphicsContext2D.setFill(Blue)
+            canvas.graphicsContext2D.fillOval(0, 10, canvas.width.toDouble, canvas.height.toDouble - 10)
+          else
+            canvas.graphicsContext2D.setFill(Black)
+            canvas.graphicsContext2D.fillOval(0, 10, canvas.width.toDouble, canvas.height.toDouble - 10)
