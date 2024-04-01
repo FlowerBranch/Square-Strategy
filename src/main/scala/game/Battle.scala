@@ -7,10 +7,10 @@ class Battle:
   val battleground = Battleground(20, 15)
   
   val playerTeam = Vector[Character](
-    Character(this, "raimo1", 200, 20, 10),
-    Character(this, "raimo2", 200, 20, 15),
-    Character(this, "raimo3", 200, 20, 20),
-    Character(this, "raimo4", 200, 20, 5)
+    Character(this, "raimo1", 200, 20, 10, Vector(Pyromania)),
+    Character(this, "raimo2", 200, 20, 15, Vector(Pyromania)),
+    Character(this, "raimo3", 200, 20, 20, Vector(Pyromania)),
+    Character(this, "raimo4", 200, 20, 5, Vector(Pyromania))
   )
   
   val playerLocations: Seq[(Int, Int)] =
@@ -23,10 +23,10 @@ class Battle:
   playerTeam(3).move(this.battleground.getSquare(playerLocations(3)._1, playerLocations(3)._2).head)
   
   val enemyTeam = Vector[Character](
-    Character(this, "jarmo1", 200, 20, 10),
-    Character(this, "jarmo2", 200, 20, 15),
-    Character(this, "jarmo3", 200, 20, 20),
-    Character(this, "jarmo4", 200, 20, 5)
+    Character(this, "jarmo1", 200, 20, 10, Vector(Pyromania)),
+    Character(this, "jarmo2", 200, 20, 15, Vector(Pyromania)),
+    Character(this, "jarmo3", 200, 20, 20, Vector(Pyromania)),
+    Character(this, "jarmo4", 200, 20, 5, Vector(Pyromania))
   )
   val enemyLocations: Seq[(Int, Int)] =
     for i <- 0 until 4 yield

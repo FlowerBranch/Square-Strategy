@@ -19,9 +19,10 @@ case class Obstacle() extends Actor:
   
   def move(to: Square) = ()
 
-case class Character(battle: Battle, val name: String, startHP: Int, private val armor: Int, private val agility: Int) extends Actor:
+case class Character(val battle: Battle, val name: String, startHP: Int, private val armor: Int, private val agility: Int,  private val abilities: Vector[Ability]) extends Actor:
 
   val canBeMovedThrough: Boolean = false
+  
   private var square: Option[Square] = None
   private val maxHP = startHP
   private var hp = startHP
@@ -50,3 +51,5 @@ case class Character(battle: Battle, val name: String, startHP: Int, private val
     hp = min(hp + amount, maxHP)
 
   def isDown = hp <= 0
+  
+  def getAbilities = abilities

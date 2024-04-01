@@ -12,11 +12,27 @@ import scalafx.event.*
 import scalafx.scene.input.*
 import scalafx.Includes.*
 import scalafx.animation.AnimationTimer
-import scalafx.scene.control.Label
+import scalafx.scene.control.*
 
 object Main extends JFXApp3:
 
   def start() =
+
+    def makeGrid(ofDimX: Int, ofDimY: Int) =
+      val grid =  new GridPane():
+        gridLinesVisible = true
+      val column = new ColumnConstraints:
+        percentWidth = 100.0 / ofDimX.toDouble
+      val row = new RowConstraints:
+        percentHeight = 100.0 / ofDimY.toDouble
+      grid.columnConstraints =
+        for i <- 0 until ofDimX yield
+          column
+      grid.rowConstraints =
+        for i <- 0 until ofDimY yield
+          row
+      grid
+    end makeGrid
 
     val battle = Battle()
 
@@ -36,75 +52,33 @@ object Main extends JFXApp3:
     stage.setFullScreen(true)
     stage.scene = scene
 
+    val infoBox = makeGrid(1, 4)
+
+    val heroBoxController = makeGrid(1, 1)
+
+    val playerBox = makeGrid(2, 2)
+    val enemyBox = makeGrid(2, 2)
+
+    infoBox.add(playerBox, 0, 0, 1, 1)
+    infoBox.add(heroBoxController, 0, 1, 1, 1)
+    infoBox.add(enemyBox, 0, 3, 1, 1)
+
+    val goodGuyBoxes = battle.playerTeam.map(CharacterDisplay(_))
+
+    playerBox.add(goodGuyBoxes(0).characterBox, 0, 0, 1, 1)
+    playerBox.add(goodGuyBoxes(1).characterBox, 1, 0, 1, 1)
+    playerBox.add(goodGuyBoxes(2).characterBox, 0, 1, 1, 1)
+    playerBox.add(goodGuyBoxes(3).characterBox, 1, 1, 1, 1)
+
+    val badGuyBoxes = battle.enemyTeam.map(CharacterDisplay(_))
+
+    enemyBox.add(badGuyBoxes(0).characterBox, 0, 0, 1, 1)
+    enemyBox.add(badGuyBoxes(1).characterBox, 1, 0, 1, 1)
+    enemyBox.add(badGuyBoxes(2).characterBox, 0, 1, 1, 1)
+    enemyBox.add(badGuyBoxes(3).characterBox, 1, 1, 1, 1)
+
     constructBackground()
     drawBattleground()
-
-    def makeGrid(ofDimX: Int, ofDimY: Int) =
-      val grid =  new GridPane():
-        gridLinesVisible = true
-      val column = new ColumnConstraints:
-        percentWidth = 100.0 / ofDimX.toDouble
-      val row = new RowConstraints:
-        percentHeight = 100.0 / ofDimY.toDouble
-      grid.columnConstraints =
-        for i <- 0 until ofDimX yield
-          column
-      grid.rowConstraints =
-        for i <- 0 until ofDimY yield
-          row
-      grid
-    end makeGrid
-
-    def makeCharacterDisplay(of: Character) =
-
-      val characterBox = makeGrid(2, 2)
-      characterBox.margin = Insets(3, 3, 3, 3)
-      val shifter = "    "
-      val portrait = new Canvas():
-        width = 50
-        height = 50
-        if battle.playerTeam.contains(of) then
-          graphicsContext2D.setFill(Blue)
-          graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
-        else
-          graphicsContext2D.setFill(Black)
-          graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
-      val name = Label(shifter + of.name)
-      val health = Label(shifter + s"HP: ${of.currentHP}/${of.maxHealth}")
-      val statuses = Label(shifter + "Status: " + of.getStatus.mkString)
-      characterBox.add(portrait, 0, 0, 1, 1)
-      characterBox.add(name, 1, 0, 1, 1)
-      characterBox.add(health, 0, 1, 1, 1)
-      characterBox.add(statuses, 1, 1, 1, 1)
-      characterBox
-
-    end makeCharacterDisplay
-
-    def drawUI =
-
-      val infoBox = makeGrid(1, 4)
-
-      val playerBox = makeGrid(2, 2)
-      val enemyBox = makeGrid(2, 2)
-
-      infoBox.add(playerBox, 0, 0, 1, 1)
-      infoBox.add(enemyBox, 0, 3, 1, 1)
-
-      val goodGuyBoxes = battle.playerTeam.map(makeCharacterDisplay(_))
-
-      playerBox.add(goodGuyBoxes(0), 0, 0, 1, 1)
-      playerBox.add(goodGuyBoxes(1), 1, 0, 1, 1)
-      playerBox.add(goodGuyBoxes(2), 0, 1, 1, 1)
-      playerBox.add(goodGuyBoxes(3), 1, 1, 1, 1)
-
-      val badGuyBoxes = battle.enemyTeam.map(makeCharacterDisplay(_))
-
-      enemyBox.add(badGuyBoxes(0), 0, 0, 1, 1)
-      enemyBox.add(badGuyBoxes(1), 1, 0, 1, 1)
-      enemyBox.add(badGuyBoxes(2), 0, 1, 1, 1)
-      enemyBox.add(badGuyBoxes(3), 1, 1, 1, 1)
-
-      infoBox
 
     def constructBackground() =
 
@@ -113,7 +87,6 @@ object Main extends JFXApp3:
         height = 900
         graphicsContext2D.setFill(Green)
         graphicsContext2D.fillRect(0, 0, width.toDouble, height.toDouble)
-      val sideBox = drawUI
 
       val row0 = new RowConstraints:
         percentHeight = 100
@@ -125,7 +98,7 @@ object Main extends JFXApp3:
       root.columnConstraints = Array(column0, column1)
 
       root.add(backdrop, 0, 0, 2, 1)
-      root.add(sideBox, 1, 0, 1, 1)
+      root.add(infoBox, 1, 0, 1, 1)
 
     end constructBackground
 
@@ -149,9 +122,11 @@ object Main extends JFXApp3:
           i.canvas.handleEvent(MouseEvent.Any) {
             (me: MouseEvent) =>
               me.eventType match
+
                 case MouseEvent.MouseMoved =>
                   if !i.square.isHighlighted then
                     i.square.highlightSwitch()
+
                 case MouseEvent.MouseClicked =>
                   if !i.square.isLocked && i.square.hasCharacter && battle.battleground.lockedSquare.isEmpty then
                     i.square.lockSwitch()
@@ -168,9 +143,11 @@ object Main extends JFXApp3:
                       battle.battleground.movementRadius = None
                   else
                     ()
+
                 case _ =>
                   if i.square.isHighlighted then
                     i.square.highlightSwitch()
+
                 drawUpdate()
           }
         ))
@@ -178,15 +155,6 @@ object Main extends JFXApp3:
 
       def drawUpdate() =
 
-        /*def drawRadius(radius: Vector[(Square, Int)]) =
-          battleSquares.map(_.filter(i =>
-              radius.map(_._1).exists(j =>
-              i.square.x == j.x && i.square.y == j.y
-              )))
-            .foreach(_.foreach(i =>
-            i.canvas.graphicsContext2D.setFill(LightBlue)
-            i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
-          ))*/
         def drawPath(path: Vector[Square]) =
           battleSquares.map(_.filter(i =>
               path.exists(j =>
@@ -197,7 +165,19 @@ object Main extends JFXApp3:
             i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
           ))
 
+        def updateSideBar() =
+          goodGuyBoxes.foreach(_.update())
+          badGuyBoxes.foreach(_.update())
+          if battle.battleground.lockedSquare.isDefined then
+            if heroBoxController.children.nonEmpty then
+              heroBoxController.children.remove(heroBoxController.children.size - 1)
+            heroBoxController.add(HeroDisplay(battle.playerTeam.find(_.location == battle.battleground.lockedSquare).head).heroBox, 0, 1, 1, 1)
+          else
+            if heroBoxController.children.nonEmpty then
+              heroBoxController.children.remove(heroBoxController.children.size - 1)
+
         battleSquares.foreach(_.foreach(i => i.redraw()))
+        updateSideBar()
         if pathToDraw.isDefined then drawPath(pathToDraw.head)
 
       end drawUpdate
