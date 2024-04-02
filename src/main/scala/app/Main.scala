@@ -55,6 +55,7 @@ object Main extends JFXApp3:
     val infoBox = makeGrid(1, 4)
 
     val heroBoxController = makeGrid(1, 1)
+    var currentHero: Option[HeroDisplay] = None
 
     val playerBox = makeGrid(2, 2)
     val enemyBox = makeGrid(2, 2)
@@ -169,16 +170,29 @@ object Main extends JFXApp3:
           goodGuyBoxes.foreach(_.update())
           badGuyBoxes.foreach(_.update())
           if battle.battleground.lockedSquare.isDefined then
-            if heroBoxController.children.nonEmpty then
-              heroBoxController.children.remove(heroBoxController.children.size - 1)
-            heroBoxController.add(HeroDisplay(battle.playerTeam.find(_.location == battle.battleground.lockedSquare).head).heroBox, 0, 0, 1, 1)
+            if currentHero.isEmpty then
+              currentHero = Some(HeroDisplay(battle.playerTeam.find(_.location == battle.battleground.lockedSquare).head))
+              if heroBoxController.children.nonEmpty then
+                heroBoxController.children.remove(heroBoxController.children.size - 1)
+              heroBoxController.add(currentHero.head.heroBox, 0, 0, 1, 1)
           else
             if heroBoxController.children.nonEmpty then
               heroBoxController.children.remove(heroBoxController.children.size - 1)
+            currentHero = None
 
-        battleSquares.foreach(_.foreach(i => i.redraw()))
+        def updateAbilityAoE() =
+          if currentHero.isDefined then
+            battleSquares.flatten.filter(i => currentHero.head.currentArea.contains(i.square)).foreach(i =>
+              i.canvas.graphicsContext2D.setFill(Red)
+              i.canvas.graphicsContext2D.fillRect(0, 0, 10, 10)
+            )
+          else
+            ()
+
         updateSideBar()
-        if pathToDraw.isDefined then drawPath(pathToDraw.head)
+        //if pathToDraw.isDefined then drawPath(pathToDraw.head)
+        battleSquares.foreach(_.foreach(i => i.redraw()))
+        updateAbilityAoE()
 
       end drawUpdate
 

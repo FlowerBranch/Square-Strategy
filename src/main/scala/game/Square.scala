@@ -18,7 +18,7 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
         case _                    => false
     else
       false
-  
+
   def getActor: Option[Actor] = actor
   
   def addActor(actor: Actor) =
@@ -65,7 +65,7 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
            this.battleground.getSquare(this.x, this.y - 1),
            this.battleground.getSquare(this.x, this.y + 1)
     ).flatten
-    
+
   def allNeighbors: Vector[Square] =
   Vector(this.battleground.getSquare(this.x - 1, this.y - 1), this.battleground.getSquare(this.x, this.y - 1), this.battleground.getSquare(this.x + 1, this.y - 1),
          this.battleground.getSquare(this.x - 1, this.y),     this.battleground.getSquare(this.x, this.y),     this.battleground.getSquare(this.x + 1, this.y),

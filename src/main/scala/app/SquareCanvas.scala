@@ -2,7 +2,7 @@ package app
 
 import game.*
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
-import scalafx.scene.paint.Color.{Black, Blue, Brown, Green, Grey, LightBlue, Red}
+import scalafx.scene.paint.Color.{Black, Blue, Brown, Green, Grey, LightBlue, Red, Yellow}
 
 class SquareCanvas(val square: Square):
 
@@ -30,7 +30,7 @@ class SquareCanvas(val square: Square):
 
   def redraw() =
     if square.isHighlighted || square.isLocked then
-      canvas.graphicsContext2D.setFill(Red)
+      canvas.graphicsContext2D.setFill(Yellow)
       canvas.graphicsContext2D.fillRect(0, 0, canvas.width.toDouble, canvas.height.toDouble)
     else if square.battleground.getCurrentRadius.contains(square) then
       canvas.graphicsContext2D.setFill(LightBlue)
