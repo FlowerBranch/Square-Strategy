@@ -51,7 +51,7 @@ class HeroDisplay(hero: Character):
   useButtonHandler.gridLinesVisible = false
 
   heroBox.add(useButtonHandler, 2, 1, 2, 2)
-  heroBox.add(rotateButtonHandler, 0, 2, 1, 1)
+  heroBox.add(rotateButtonHandler, 1, 3, 1, 1)
 
   def makeAbilityButton(of: Ability) =
     val button = new Button(of.name):
@@ -83,4 +83,5 @@ class HeroDisplay(hero: Character):
 
   val abilityButtons = hero.getAbilities.map(makeAbilityButton(_))
 
-  heroBox.add(abilityButtons(0), 1, 2, 1, 1)
+  heroBox.add(abilityButtons(0), 0, 2, 1, 1)
+  heroBox.add(abilityButtons(1), 1, 2, 1, 1)

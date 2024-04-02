@@ -7,10 +7,10 @@ class Battle:
   val battleground = Battleground(20, 15)
   
   val playerTeam = Vector[Character](
-    Character(this, "raimo1", 200, 20, 10, Vector(Pyromania)),
-    Character(this, "raimo2", 200, 20, 15, Vector(Pyromania)),
-    Character(this, "raimo3", 200, 20, 20, Vector(Pyromania)),
-    Character(this, "raimo4", 200, 20, 5, Vector(Pyromania))
+    Character(this, "raimo1", 200, 20, 10, Vector(Pyromania, Stab)),
+    Character(this, "raimo2", 200, 20, 15, Vector(Pyromania, Stab)),
+    Character(this, "raimo3", 200, 20, 20, Vector(Pyromania, Stab)),
+    Character(this, "raimo4", 200, 20, 5, Vector(Pyromania, Stab))
   )
   
   val playerLocations: Seq[(Int, Int)] =

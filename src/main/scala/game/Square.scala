@@ -43,6 +43,21 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
     else
       lockState = true
 
+  def squareInDirection(direction: Direction): Option[Square] =
+    direction match
+      case Right => this.battleground.getSquare(this.x + 1, this.y    )
+      case Down  => this.battleground.getSquare(this.x,     this.y + 1)
+      case Left  => this.battleground.getSquare(this.x - 1, this.y    )
+      case Up    => this.battleground.getSquare(this.x,     this.y - 1)
+  
+  def squaresInDirection(amount: Int, direction: Direction): Vector[Square] =
+    val nextSquare = this.squareInDirection(direction)
+    if nextSquare.isEmpty || amount == 0 then
+      Vector()
+    else
+      Vector(nextSquare.head) ++ nextSquare.head.squaresInDirection(amount - 1, direction)
+      
+  
   def yDirectionOf(another: Square): Option[Direction] =
     if this.y < another.y then
       Some(Down)
