@@ -30,7 +30,7 @@ class Battle:
     Character(this, "jarmo3", 200, 20, 20, Vector(Pyromania)),
     Character(this, "jarmo4", 200, 20, 5, Vector(Pyromania))
   )
-  val enemyLocations: Seq[(Int, Int)] =
+  val enemyLocations: Seq[(Int, Int)] =//TODO try to make failsafe for characters ending up on same square
     for i <- 0 until 4 yield
       (Random.nextInt(this.battleground.width), Random.nextInt(this.battleground.height))
       

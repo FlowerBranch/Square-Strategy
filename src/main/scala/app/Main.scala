@@ -29,6 +29,7 @@ object Main extends JFXApp3:
     ))
 
     var pathToDraw: Option[Vector[Square]] = None
+    var pathCharacter: Option[Actor] = None
     var currentHero: Option[HeroDisplay] = None
 
     val root = makeRoot
@@ -76,8 +77,8 @@ object Main extends JFXApp3:
                   i.square.highlightSwitch()
 
               case MouseEvent.MouseClicked =>
-                if !i.square.isLocked && battle.playerTeam.exists(j =>
-                  Some(j) == i.square.getActor && !j.turnIsOver)
+                if !i.square.isLocked
+                  && battle.playerTeam.exists(j => Some(j) == i.square.getActor && !j.turnIsOver)
                   && battle.battleground.lockedSquare.isEmpty then
                   i.square.lockSwitch()
                   battle.battleground.lockedSquare = Some(i.square)
@@ -87,7 +88,8 @@ object Main extends JFXApp3:
                 else if battle.battleground.lockedSquare.isDefined then
                   pathToDraw = Some(battle.battleground.squaresAlongPath(i.square, battle.battleground.movementRadius.head))
                   if pathToDraw.head.contains(i.square) then
-                    battle.battleground.lockedSquare.head.getActor.head.move(i.square, pathToDraw.head)
+                    pathCharacter = battle.battleground.lockedSquare.head.getActor
+                    //battle.battleground.lockedSquare.head.getActor.head.move(i.square, pathToDraw.head)
                     battle.battleground.lockedSquare.head.lockSwitch()
                     battle.battleground.lockedSquare = None
                     battle.battleground.movementRadius = None
@@ -102,6 +104,17 @@ object Main extends JFXApp3:
     end battleEvents
 
     def drawUpdate() =
+
+      def followPath() =
+        if pathToDraw.isDefined && pathCharacter.isDefined then
+          if pathToDraw.head.nonEmpty then
+            pathCharacter.head.move(pathToDraw.head.head, Vector(pathToDraw.head.head))
+            pathToDraw = Some(pathToDraw.head.tail)
+          else
+            pathToDraw = None
+            pathCharacter = None
+        else
+          ()
 
       def drawPath(path: Vector[Square]) =
         battleSquares.map(_.filter(i =>
@@ -137,7 +150,7 @@ object Main extends JFXApp3:
           ()
 
       updateSideBar()
-
+      followPath()
       battleSquares.foreach(_.foreach(i => i.redraw()))
       //if pathToDraw.isDefined then drawPath(pathToDraw.head)
       updateAbilityAoE()
