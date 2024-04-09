@@ -22,12 +22,18 @@ case class Obstacle() extends Actor:
 case class Character(val battle: Battle, val name: String, startHP: Int, private val armor: Int, private val agility: Int,  private val abilities: Vector[Ability]) extends Actor:
 
   val canBeMovedThrough: Boolean = false
-  
+  var turnEnded = false
+  var abilityUsed = false
   private var square: Option[Square] = None
   private val maxHP = startHP
   private var hp = startHP
   private val status: Option[Status] = None
   private var turnAgility = this.agility
+  
+  def turnStartState() =
+    this.turnAgility = this.agility
+    abilityUsed = false
+    turnEnded = false
   
   def move(to: Square, alongPath: Vector[Square]) =
     if this.square.isDefined then
@@ -41,6 +47,8 @@ case class Character(val battle: Battle, val name: String, startHP: Int, private
   def getAgility = this.turnAgility
 
   def isStuck = this.turnAgility == 0
+  
+  def turnIsOver = this.turnEnded || this.isDown || (this.isStuck && this.abilityUsed)
   
   def getStatus = status
   

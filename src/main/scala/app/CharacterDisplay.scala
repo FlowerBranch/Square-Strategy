@@ -7,22 +7,6 @@ import scalafx.scene.control.Label
 import scalafx.scene.layout.{ColumnConstraints, GridPane, RowConstraints}
 import scalafx.scene.paint.Color.{Black, Blue}
 
-def makeGrid(ofDimX: Int, ofDimY: Int) =
-  val grid =  new GridPane():
-    gridLinesVisible = true
-  val column = new ColumnConstraints:
-    percentWidth = 100.0 / ofDimX.toDouble
-  val row = new RowConstraints:
-    percentHeight = 100.0 / ofDimY.toDouble
-  grid.columnConstraints =
-    for i <- 0 until ofDimX yield
-      column
-  grid.rowConstraints =
-    for i <- 0 until ofDimY yield
-      row
-  grid
-end makeGrid
-
 class CharacterDisplay(of: Character):
 
   val characterBox = makeGrid(2, 2)

@@ -5,7 +5,7 @@ import scala.util.Random
 class Battle:
 
   var gameOver = false
-  
+
   val battleground = Battleground(20, 15)
   
   val playerTeam = Vector[Character](
@@ -40,17 +40,20 @@ class Battle:
   enemyTeam(3).move(this.battleground.getSquare(enemyLocations(3)._1, enemyLocations(3)._2).head, Vector())
   
   battleground.addObstacles(60)
-  
-  def playerTurn() = ???
-  
+/*
+  def playerTurn() =
+    playerTeam.foreach(_.turnStartState())
+    while playerTeam.exists(!_.turnIsOver) do
+*/
+
   def enemyTurn() = ???
-  
+
   def playerLost = playerTeam.forall(_.isDown)
-  
+
   def enemyLost = enemyTeam.forall(_.isDown)
-  
-  def play() =
+
+  def play(updateUI: => Unit) =
     while !playerLost && !enemyLost do
-      playerTurn()
-      enemyTurn()
+      //playerTurn( )
+      //enemyTurn()
     gameOver = true

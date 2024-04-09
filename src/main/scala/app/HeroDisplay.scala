@@ -41,7 +41,7 @@ class HeroDisplay(hero: Character):
   val endTurnButton = new Button("End Turn"):
     onAction = (event) =>
       currentArea = Vector()
-      ()
+      hero.turnEnded = true
 
   heroBox.add(endTurnButton, 1, 1, 1, 1)
 
@@ -74,7 +74,11 @@ class HeroDisplay(hero: Character):
 
         val useButton = new Button("Use Ability"):
           onAction = (event) =>
-            of.use(hero, currentDirection._1)
+            if !hero.abilityUsed then
+              of.use(hero, currentDirection._1)
+              hero.abilityUsed = true
+            else
+              ()
 
         rotateButtonHandler.add(rotateButton, 0, 0, 1, 1)
         useButtonHandler.add(useButton, 0, 0, 1, 1)

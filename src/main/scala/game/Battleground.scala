@@ -3,7 +3,6 @@ package game
 import scala.collection.mutable.Buffer
 import game.Direction.*
 import scala.util.Random
-import scala.math.*
 
 class Battleground(val width: Int, val height: Int):
 
@@ -64,7 +63,9 @@ class Battleground(val width: Int, val height: Int):
   def squaresAlongPath(end: Square, radius: Vector[(Square, Int)]): Vector[Square] =
 
     def moveToOrigin(from: (Square, Int)): Vector[Square] =
-      if from._2 == 1 then
+      if from._2 == 0 then
+        throw Exception("You are already in that square")
+      else if from._2 == 1 then
         Vector(from._1)
       else
         val lowerDepthRadius = radius.filter(_._2 == from._2 - 1)

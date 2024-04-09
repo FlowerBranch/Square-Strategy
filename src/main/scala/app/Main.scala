@@ -18,90 +18,42 @@ object Main extends JFXApp3:
 
   def start() =
 
-    def makeGrid(ofDimX: Int, ofDimY: Int) =
-      val grid =  new GridPane():
-        gridLinesVisible = true
-      val column = new ColumnConstraints:
-        percentWidth = 100.0 / ofDimX.toDouble
-      val row = new RowConstraints:
-        percentHeight = 100.0 / ofDimY.toDouble
-      grid.columnConstraints =
-        for i <- 0 until ofDimX yield
-          column
-      grid.rowConstraints =
-        for i <- 0 until ofDimY yield
-          row
-      grid
-    end makeGrid
-
     val battle = Battle()
 
     var pathToDraw: Option[Vector[Square]] = None
+    var currentHero: Option[HeroDisplay] = None
 
-    val root = new GridPane():
-      maxWidth = 1600
-      maxHeight = 900
+    val root = makeRoot
 
-    val scene = Scene(parent = root)
+    constructBackground(root)
+
+    val gameScene = Scene(parent = root)
+
+    val infoBox = makeGrid(1, 4)
+    infoBox.background = Background.fill(White)
+
+    val heroBoxController = makeGrid(1, 1)
+
+    val playerBox = makeGrid(2, 2)
+    val goodGuyBoxes = makeCharacterBoxes(playerBox, battle.playerTeam)
+
+    val enemyBox = makeGrid(2, 2)
+    val badGuyBoxes = makeCharacterBoxes(enemyBox, battle.enemyTeam)
+
+    infoBox.add(heroBoxController, 0, 1, 1, 1)
+    infoBox.add(playerBox, 0, 0, 1, 1)
+    infoBox.add(enemyBox, 0, 3, 1, 1)
+
+    root.add(infoBox, 1, 0, 1, 1)
+
+    drawBattleground()
 
     stage = new JFXApp3.PrimaryStage:
       title = "Square Strategy"
       width = 800
       height = 450
-
-    stage.setFullScreen(true)
-    stage.scene = scene
-
-    val infoBox = makeGrid(1, 4)
-
-    val heroBoxController = makeGrid(1, 1)
-    var currentHero: Option[HeroDisplay] = None
-
-    val playerBox = makeGrid(2, 2)
-    val enemyBox = makeGrid(2, 2)
-
-    infoBox.add(playerBox, 0, 0, 1, 1)
-    infoBox.add(heroBoxController, 0, 1, 1, 1)
-    infoBox.add(enemyBox, 0, 3, 1, 1)
-
-    val goodGuyBoxes = battle.playerTeam.map(CharacterDisplay(_))
-
-    playerBox.add(goodGuyBoxes(0).characterBox, 0, 0, 1, 1)
-    playerBox.add(goodGuyBoxes(1).characterBox, 1, 0, 1, 1)
-    playerBox.add(goodGuyBoxes(2).characterBox, 0, 1, 1, 1)
-    playerBox.add(goodGuyBoxes(3).characterBox, 1, 1, 1, 1)
-
-    val badGuyBoxes = battle.enemyTeam.map(CharacterDisplay(_))
-
-    enemyBox.add(badGuyBoxes(0).characterBox, 0, 0, 1, 1)
-    enemyBox.add(badGuyBoxes(1).characterBox, 1, 0, 1, 1)
-    enemyBox.add(badGuyBoxes(2).characterBox, 0, 1, 1, 1)
-    enemyBox.add(badGuyBoxes(3).characterBox, 1, 1, 1, 1)
-
-    constructBackground()
-    drawBattleground()
-
-    def constructBackground() =
-
-      val backdrop = new Canvas():
-        width = 1600
-        height = 900
-        graphicsContext2D.setFill(Green)
-        graphicsContext2D.fillRect(0, 0, width.toDouble, height.toDouble)
-
-      val row0 = new RowConstraints:
-        percentHeight = 100
-      val column0 = new ColumnConstraints:
-        percentWidth = 75
-      val column1 = new ColumnConstraints:
-        percentWidth = 25
-      root.rowConstraints = Array(row0)
-      root.columnConstraints = Array(column0, column1)
-
-      root.add(backdrop, 0, 0, 2, 1)
-      root.add(infoBox, 1, 0, 1, 1)
-
-    end constructBackground
+      fullScreen = true
+      scene = gameScene
 
     def drawBattleground() =
 
@@ -129,7 +81,9 @@ object Main extends JFXApp3:
                     i.square.highlightSwitch()
 
                 case MouseEvent.MouseClicked =>
-                  if !i.square.isLocked && battle.playerTeam.exists(j => Some(j) == i.square.getActor) && battle.battleground.lockedSquare.isEmpty then
+                  if !i.square.isLocked && battle.playerTeam.exists(j =>
+                    Some(j) == i.square.getActor && !j.turnIsOver)
+                    && battle.battleground.lockedSquare.isEmpty then
                     i.square.lockSwitch()
                     battle.battleground.lockedSquare = Some(i.square)
                     val start = battle.battleground.lockedSquare.head
@@ -192,7 +146,7 @@ object Main extends JFXApp3:
         updateSideBar()
 
         battleSquares.foreach(_.foreach(i => i.redraw()))
-        if pathToDraw.isDefined then drawPath(pathToDraw.head)
+        //if pathToDraw.isDefined then drawPath(pathToDraw.head)
         updateAbilityAoE()
 
       end drawUpdate
