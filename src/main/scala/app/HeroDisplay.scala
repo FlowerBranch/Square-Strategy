@@ -11,6 +11,12 @@ class HeroDisplay(hero: Character):
   val directions = Vector(Right, Down, Left, Up).zipWithIndex
   var currentArea = Vector[Square]()
 
+  def emptyTime() =
+    currentArea = Vector()
+    hero.battle.battleground.lockedSquare.head.lockSwitch()
+    hero.battle.battleground.lockedSquare = None
+    hero.battle.battleground.movementRadius = None
+
   val heroBox = makeGrid(4, 4)
   heroBox.gridLinesVisible = false
 
@@ -31,16 +37,13 @@ class HeroDisplay(hero: Character):
 
   val backButton = new Button("Return"):
     onAction = (event) =>
-      currentArea = Vector()
-      hero.battle.battleground.lockedSquare.head.lockSwitch()
-      hero.battle.battleground.lockedSquare = None
-      hero.battle.battleground.movementRadius = None
+      emptyTime()
 
   heroBox.add(backButton, 0, 1, 1, 1)
 
   val endTurnButton = new Button("End Turn"):
     onAction = (event) =>
-      currentArea = Vector()
+      emptyTime()
       hero.turnEnded = true
 
   heroBox.add(endTurnButton, 1, 1, 1, 1)
@@ -77,6 +80,8 @@ class HeroDisplay(hero: Character):
             if !hero.abilityUsed then
               of.use(hero, currentDirection._1)
               hero.abilityUsed = true
+              if hero.turnIsOver then
+                emptyTime()
             else
               ()
 

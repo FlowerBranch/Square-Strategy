@@ -19,6 +19,14 @@ object Main extends JFXApp3:
   def start() =
 
     val battle = Battle()
+    val battleSquares = battle.battleground.area.map(_.map(i => SquareCanvas(i)))
+
+    val battleGrid = makeGrid(battle.battleground.width, battle.battleground.height)
+    battleGrid.margin = Insets(3, 3, 3, 3)
+
+    battle.battleground.area.foreach(i => i.foreach(j =>
+      battleGrid.add(battleSquares(j.x)(j.y).canvas, j.x, j.y)
+    ))
 
     var pathToDraw: Option[Vector[Square]] = None
     var currentHero: Option[HeroDisplay] = None
@@ -45,8 +53,7 @@ object Main extends JFXApp3:
     infoBox.add(enemyBox, 0, 3, 1, 1)
 
     root.add(infoBox, 1, 0, 1, 1)
-
-    drawBattleground()
+    root.add(battleGrid, 0, 0, 1, 2)
 
     stage = new JFXApp3.PrimaryStage:
       title = "Square Strategy"
@@ -55,103 +62,87 @@ object Main extends JFXApp3:
       fullScreen = true
       scene = gameScene
 
-    def drawBattleground() =
+    battleEvents()
+    battle.play(drawUpdate())
 
-      val battleGrid = makeGrid(battle.battleground.width, battle.battleground.height)
-      battleGrid.margin = Insets(3, 3, 3, 3)
+    def battleEvents() =
+      battleSquares.foreach(_.foreach(i =>
+        i.canvas.handleEvent(MouseEvent.Any) {
+          (me: MouseEvent) =>
+            me.eventType match
 
-      val battleSquares = battle.battleground.area.map(_.map(i => SquareCanvas(i)))
+              case MouseEvent.MouseMoved =>
+                if !i.square.isHighlighted then
+                  i.square.highlightSwitch()
 
-      battle.battleground.area.foreach(i => i.foreach(j =>
-        battleGrid.add(battleSquares(j.x)(j.y).canvas, j.x, j.y)
+              case MouseEvent.MouseClicked =>
+                if !i.square.isLocked && battle.playerTeam.exists(j =>
+                  Some(j) == i.square.getActor && !j.turnIsOver)
+                  && battle.battleground.lockedSquare.isEmpty then
+                  i.square.lockSwitch()
+                  battle.battleground.lockedSquare = Some(i.square)
+                  val start = battle.battleground.lockedSquare.head
+                  val agility = i.square.getActor.head.getAgility
+                  battle.battleground.movementRadius = Some(battle.battleground.squaresWithinRadius(start, agility))
+                else if battle.battleground.lockedSquare.isDefined then
+                  pathToDraw = Some(battle.battleground.squaresAlongPath(i.square, battle.battleground.movementRadius.head))
+                  if pathToDraw.head.contains(i.square) then
+                    battle.battleground.lockedSquare.head.getActor.head.move(i.square, pathToDraw.head)
+                    battle.battleground.lockedSquare.head.lockSwitch()
+                    battle.battleground.lockedSquare = None
+                    battle.battleground.movementRadius = None
+                else
+                  ()
+
+              case _ =>
+                if i.square.isHighlighted then
+                  i.square.highlightSwitch()
+        }
       ))
+    end battleEvents
 
-      root.add(battleGrid, 0, 0, 1, 2)
+    def drawUpdate() =
 
-      updateGrid()
-
-      def updateGrid() =
-        battleSquares.foreach(_.foreach(i =>
-          i.canvas.handleEvent(MouseEvent.Any) {
-            (me: MouseEvent) =>
-              me.eventType match
-
-                case MouseEvent.MouseMoved =>
-                  if !i.square.isHighlighted then
-                    i.square.highlightSwitch()
-
-                case MouseEvent.MouseClicked =>
-                  if !i.square.isLocked && battle.playerTeam.exists(j =>
-                    Some(j) == i.square.getActor && !j.turnIsOver)
-                    && battle.battleground.lockedSquare.isEmpty then
-                    i.square.lockSwitch()
-                    battle.battleground.lockedSquare = Some(i.square)
-                    val start = battle.battleground.lockedSquare.head
-                    val agility = i.square.getActor.head.getAgility
-                    battle.battleground.movementRadius = Some(battle.battleground.squaresWithinRadius(start, agility))
-                  else if battle.battleground.lockedSquare.isDefined then
-                    pathToDraw = Some(battle.battleground.squaresAlongPath(i.square, battle.battleground.movementRadius.head))
-                    if pathToDraw.head.contains(i.square) then
-                      battle.battleground.lockedSquare.head.getActor.head.move(i.square, pathToDraw.head)
-                      battle.battleground.lockedSquare.head.lockSwitch()
-                      battle.battleground.lockedSquare = None
-                      battle.battleground.movementRadius = None
-                  else
-                    ()
-
-                case _ =>
-                  if i.square.isHighlighted then
-                    i.square.highlightSwitch()
-
-                drawUpdate()
-          }
+      def drawPath(path: Vector[Square]) =
+        battleSquares.map(_.filter(i =>
+            path.exists(j =>
+            i.square.x == j.x && i.square.y == j.y
+            )))
+          .foreach(_.foreach(i =>
+          i.canvas.graphicsContext2D.setFill(Grey)
+          i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
         ))
-      end updateGrid
 
-      def drawUpdate() =
-
-        def drawPath(path: Vector[Square]) =
-          battleSquares.map(_.filter(i =>
-              path.exists(j =>
-              i.square.x == j.x && i.square.y == j.y
-              )))
-            .foreach(_.foreach(i =>
-            i.canvas.graphicsContext2D.setFill(Grey)
-            i.canvas.graphicsContext2D.fillRect(0, 0, i.canvas.width.toDouble, i.canvas.height.toDouble)
-          ))
-
-        def updateSideBar() =
-          goodGuyBoxes.foreach(_.update())
-          badGuyBoxes.foreach(_.update())
-          if battle.battleground.lockedSquare.isDefined then
-            if currentHero.isEmpty then
-              currentHero = Some(HeroDisplay(battle.playerTeam.find(_.location == battle.battleground.lockedSquare).head))
-              if heroBoxController.children.nonEmpty then
-                heroBoxController.children.remove(heroBoxController.children.size - 1)
-              heroBoxController.add(currentHero.head.heroBox, 0, 0, 1, 1)
-          else
+      def updateSideBar() =
+        goodGuyBoxes.foreach(_.update())
+        badGuyBoxes.foreach(_.update())
+        if battle.battleground.lockedSquare.isDefined then
+          if currentHero.isEmpty then
+            currentHero = Some(HeroDisplay(battle.playerTeam.find(_.location == battle.battleground.lockedSquare).head))
             if heroBoxController.children.nonEmpty then
               heroBoxController.children.remove(heroBoxController.children.size - 1)
-            currentHero = None
+            heroBoxController.add(currentHero.head.heroBox, 0, 0, 1, 1)
+        else
+          if heroBoxController.children.nonEmpty then
+            heroBoxController.children.remove(heroBoxController.children.size - 1)
+          currentHero = None
 
-        def updateAbilityAoE() =
-          if currentHero.isDefined then
-            battleSquares.flatten.filter(i => currentHero.head.currentArea.contains(i.square)).foreach(i =>
-              i.canvas.graphicsContext2D.setFill(Red)
-              i.canvas.graphicsContext2D.fillRect(0, 0, 10, 10)
-            )
-          else
-            ()
+      def updateAbilityAoE() =
+        if currentHero.isDefined then
+          battleSquares.flatten.filter(i => currentHero.head.currentArea.contains(i.square)).foreach(i =>
+            i.canvas.graphicsContext2D.setFill(Red)
+            i.canvas.graphicsContext2D.fillRect(0, 0, 10, 10)
+          )
+        else
+          ()
 
-        updateSideBar()
+      updateSideBar()
 
-        battleSquares.foreach(_.foreach(i => i.redraw()))
-        //if pathToDraw.isDefined then drawPath(pathToDraw.head)
-        updateAbilityAoE()
+      battleSquares.foreach(_.foreach(i => i.redraw()))
+      //if pathToDraw.isDefined then drawPath(pathToDraw.head)
+      updateAbilityAoE()
 
-      end drawUpdate
-
-    end drawBattleground
+    end drawUpdate
 
   end start
 

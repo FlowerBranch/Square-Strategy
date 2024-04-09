@@ -1,12 +1,12 @@
 package game
 
+import scalafx.animation.AnimationTimer
+
 import scala.util.Random
 
 class Battle:
 
-  var gameOver = false
-
-  val battleground = Battleground(20, 15)
+  val battleground = Battleground(20, 15) //TODO battleground returns current square of residence
   
   val playerTeam = Vector[Character](
     Character(this, "raimo1", 200, 20, 10, Vector(Pyromania, Stab)),
@@ -40,20 +40,33 @@ class Battle:
   enemyTeam(3).move(this.battleground.getSquare(enemyLocations(3)._1, enemyLocations(3)._2).head, Vector())
   
   battleground.addObstacles(60)
-/*
-  def playerTurn() =
-    playerTeam.foreach(_.turnStartState())
-    while playerTeam.exists(!_.turnIsOver) do
-*/
-
-  def enemyTurn() = ???
 
   def playerLost = playerTeam.forall(_.isDown)
 
   def enemyLost = enemyTeam.forall(_.isDown)
 
-  def play(updateUI: => Unit) =
-    while !playerLost && !enemyLost do
-      //playerTurn( )
-      //enemyTurn()
-    gameOver = true
+  var turnStart = true
+
+  def play(draw: => Unit) =
+
+    def update() =
+      if playerLost || enemyLost then
+        ()
+      if playerTeam.exists(!_.turnIsOver) then
+        if turnStart then
+          playerTeam.foreach(_.turnStartState())
+          turnStart = false
+        ()
+      else
+        ()
+      draw
+    end update
+
+    val timer = AnimationTimer(
+      (timestamp: Long) =>
+        update()
+    )
+
+    timer.start()
+
+  end play
