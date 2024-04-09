@@ -73,9 +73,10 @@ class Battleground(val width: Int, val height: Int):
     if !radius.exists(_._1 == end) then
       throw Exception("Chosen square outside radius of movement")
     else
-      (moveToOrigin(radius.find(_._1 == end).head) ++ Vector(radius.find(p => p._2 == 0).head._1)).reverse
+      moveToOrigin(radius.find(_._1 == end).head).reverse
       
   end squaresAlongPath
+  // ++ Vector(radius.find(p => p._2 == 0).head._1)
 /*
   def followTunnel(start: Square): Vector[Square] =
     val tunnel = Buffer[Square]()

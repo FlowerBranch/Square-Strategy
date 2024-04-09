@@ -138,7 +138,7 @@ object Main extends JFXApp3:
                   else if battle.battleground.lockedSquare.isDefined then
                     pathToDraw = Some(battle.battleground.squaresAlongPath(i.square, battle.battleground.movementRadius.head))
                     if pathToDraw.head.contains(i.square) then
-                      battle.battleground.lockedSquare.head.getActor.head.move(i.square)
+                      battle.battleground.lockedSquare.head.getActor.head.move(i.square, pathToDraw.head)
                       battle.battleground.lockedSquare.head.lockSwitch()
                       battle.battleground.lockedSquare = None
                       battle.battleground.movementRadius = None
@@ -190,8 +190,9 @@ object Main extends JFXApp3:
             ()
 
         updateSideBar()
-        //if pathToDraw.isDefined then drawPath(pathToDraw.head)
+
         battleSquares.foreach(_.foreach(i => i.redraw()))
+        if pathToDraw.isDefined then drawPath(pathToDraw.head)
         updateAbilityAoE()
 
       end drawUpdate

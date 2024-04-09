@@ -7,7 +7,7 @@ sealed trait Actor:
   
   def getAgility: Int
   
-  def move(to: Square): Unit
+  def move(to: Square, alongPath: Vector[Square]): Unit
 
 end Actor
 
@@ -17,7 +17,7 @@ case class Obstacle() extends Actor:
   
   def getAgility = 0
   
-  def move(to: Square) = ()
+  def move(to: Square, alongPath: Vector[Square]) = ()
 
 case class Character(val battle: Battle, val name: String, startHP: Int, private val armor: Int, private val agility: Int,  private val abilities: Vector[Ability]) extends Actor:
 
@@ -27,16 +27,20 @@ case class Character(val battle: Battle, val name: String, startHP: Int, private
   private val maxHP = startHP
   private var hp = startHP
   private val status: Option[Status] = None
+  private var turnAgility = this.agility
   
-  def move(to: Square) =
+  def move(to: Square, alongPath: Vector[Square]) =
     if this.square.isDefined then
       this.square.head.removeActor(this)
     to.addActor(this)
     square = Some(to)
+    turnAgility = max(0, turnAgility - alongPath.length)
     
   def location = square
   
-  def getAgility = this.agility
+  def getAgility = this.turnAgility
+
+  def isStuck = this.turnAgility == 0
   
   def getStatus = status
   
