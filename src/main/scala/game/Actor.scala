@@ -4,6 +4,7 @@ import scala.math.*
 sealed trait Actor:
 
   val canBeMovedThrough: Boolean
+  var onTheMove: Option[Vector[Square]]
   
   def getAgility: Int
   
@@ -14,7 +15,7 @@ end Actor
 case class Obstacle() extends Actor:
 
   val canBeMovedThrough = false
-  
+  var onTheMove: Option[Vector[Square]] = None
   def getAgility = 0
   
   def move(to: Square, alongPath: Vector[Square]) = ()
@@ -24,6 +25,7 @@ case class Character(val battle: Battle, val name: String, startHP: Int, private
   val canBeMovedThrough: Boolean = false
   var turnEnded = false
   var abilityUsed = false
+  var onTheMove: Option[Vector[Square]] = None
   private var square: Option[Square] = None
   private val maxHP = startHP
   private var hp = startHP
@@ -42,6 +44,16 @@ case class Character(val battle: Battle, val name: String, startHP: Int, private
     square = Some(to)
     turnAgility = max(0, turnAgility - alongPath.length)
     
+  def followPath() =
+    if onTheMove.isDefined then
+      if onTheMove.head.nonEmpty then
+        this.move(onTheMove.head.head, Vector(onTheMove.head.head))
+        onTheMove = Some(onTheMove.head.tail)
+      else
+        onTheMove = None
+    else
+      ()
+      
   def location = square
   
   def getAgility = this.turnAgility

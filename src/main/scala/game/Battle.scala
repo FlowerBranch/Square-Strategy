@@ -65,6 +65,8 @@ class Battle:
     val timer = AnimationTimer(
       (timestamp: Long) =>
         update()
+        playerTeam.foreach(_.followPath())
+        enemyTeam.foreach(_.followPath())
     )
 
     timer.start()
