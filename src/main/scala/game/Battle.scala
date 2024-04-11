@@ -6,7 +6,7 @@ import scala.util.Random
 
 class Battle:
 
-  val battleground = Battleground(20, 15) //TODO battleground returns current square of residence
+  val battleground = Battleground(20, 15) //TODO battleground still returns current square of residence
   
   val playerTeam = Vector[Character](
     Character(this, "raimo1", 200, 20, 10, Vector(Pyromania, Stab)),

@@ -16,11 +16,18 @@ case class Obstacle() extends Actor:
 
   val canBeMovedThrough = false
   var onTheMove: Option[Vector[Square]] = None
+  
   def getAgility = 0
   
   def move(to: Square, alongPath: Vector[Square]) = ()
 
-case class Character(val battle: Battle, val name: String, startHP: Int, private val armor: Int, private val agility: Int,  private val abilities: Vector[Ability]) extends Actor:
+case class Character(val battle: Battle,
+                     val name: String,
+                     startHP: Int,
+                     private val armor: Int,
+                     private val agility: Int,
+                     private val abilities: Vector[Ability]
+                    ) extends Actor:
 
   val canBeMovedThrough: Boolean = false
   var turnEnded = false
