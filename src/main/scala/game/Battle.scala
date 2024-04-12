@@ -59,20 +59,20 @@ class Battle:
 
   def enemyLost = enemyTeam.forall(_.isDown)
 
-  var turnStart = true
-
   def play(draw: => Unit) =
 
     def update() =
       if playerLost || enemyLost then
         ()
+        
       if playerTeam.exists(!_.turnIsOver) then
-        if turnStart then
-          playerTeam.foreach(_.turnStartState())
-          turnStart = false
+        ()
+      else if enemyTeam.exists(!_.turnIsOver) then
         ()
       else
-        ()
+        playerTeam.foreach(_.turnStartState())
+        enemyTeam.foreach(_.turnStartState())
+        
       draw
     end update
 
