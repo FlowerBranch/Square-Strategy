@@ -11,7 +11,9 @@ sealed trait Ability:
 
   def use(square: Square, direction: Direction): Unit
 
-  def calculateDamage(square: Square, user: Character, userDamage: Int, otherDamage: Int) =
+  def calculateDamage(square: Square, user: Character): (Square, Direction, Int)
+
+  def calculateDamageHelper(square: Square, user: Character, userDamage: Int, otherDamage: Int): (Square, Direction, Int) =
 
     val possibleDamage: Vector[(Direction, Int)] =
       (for i <- 0 until 4 yield
@@ -22,17 +24,18 @@ sealed trait Ability:
               if c == Some(user) then
                 0
               else if c.head.battle.playerTeam.contains(c.head) then
-                0 - otherDamage
-              else
                 0 + otherDamage
+              else
+                -20 - otherDamage
             else
               0
           )).sum - userDamage
         )).toVector
 
-    possibleDamage.maxBy(p => p._2)
+    val max = possibleDamage.maxBy(p => p._2)
+    (square, max._1, max._2)
 
-  end calculateDamage
+  end calculateDamageHelper
 
   def dealDamage(area: Vector[Square], damage: Int): Unit =
     area.foreach(i =>
@@ -67,8 +70,8 @@ object Pyromania extends Ability:
         ()
     )
 
-  override def calculateDamage(square: Square, user: Character, userDamage: Int, otherDamage: Int): (Direction, Int) =
-    super.calculateDamage(square, user, 20, 70)
+  override def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
+    calculateDamageHelper(square, user, 21, 70)
     
 object Stab extends Ability:
   
@@ -80,5 +83,5 @@ object Stab extends Ability:
   def use(square: Square, direction: Direction): Unit =
     dealDamage(areaOfEffect(square, direction), 100)
 
-  override def calculateDamage(square: Square, user: Character, userDamage: Int, otherDamage: Int): (Direction, Int) =
-    super.calculateDamage(square, user, 0, 100)
+  def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
+    super.calculateDamageHelper(square, user, 0, 100)

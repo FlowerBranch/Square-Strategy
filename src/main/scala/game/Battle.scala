@@ -6,7 +6,10 @@ import scala.util.Random
 
 class Battle:
 
+  
   val battleground = Battleground(20, 15) //TODO battleground still returns current square of residence
+  
+  val enemyAI = AI()
   
   val playerTeam = Vector[Character](
     Character(this, "raimo1", 200, 20, 10, Vector(Pyromania, Stab)),
@@ -25,10 +28,10 @@ class Battle:
   playerTeam(3).move(this.battleground.getSquare(playerLocations(3)._1, playerLocations(3)._2).head, Vector())
   
   val enemyTeam = Vector[Character](
-    Character(this, "jarmo1", 200, 20, 10, Vector(Pyromania)),
-    Character(this, "jarmo2", 200, 20, 15, Vector(Pyromania)),
-    Character(this, "jarmo3", 200, 20, 20, Vector(Pyromania)),
-    Character(this, "jarmo4", 200, 20, 5, Vector(Pyromania))
+    Character(this, "jarmo1", 200, 20, 10, Vector(Pyromania, Stab)),
+    Character(this, "jarmo2", 200, 20, 15, Vector(Pyromania, Stab)),
+    Character(this, "jarmo3", 200, 20, 20, Vector(Pyromania, Stab)),
+    Character(this, "jarmo4", 200, 20, 5, Vector(Pyromania, Stab))
   )
   val enemyLocations: Seq[(Int, Int)] =//TODO try to make failsafe for characters ending up on same square
     for i <- 0 until 4 yield
@@ -68,7 +71,7 @@ class Battle:
       if playerTeam.exists(!_.turnIsOver) then
         ()
       else if enemyTeam.exists(!_.turnIsOver) then
-        ()
+        enemyAI.nextAction(this)
       else
         playerTeam.foreach(_.turnStartState())
         enemyTeam.foreach(_.turnStartState())
