@@ -1,7 +1,7 @@
 package game
 import scala.math.*
 
-sealed trait Actor:
+sealed trait Actor(val battle: Battle):
 
   val canBeMovedThrough: Boolean
   var onTheMove: Option[Vector[Square]]
@@ -12,7 +12,7 @@ sealed trait Actor:
 
 end Actor
 
-case class Obstacle() extends Actor:
+case class Obstacle(b: Battle) extends Actor(b):
 
   val canBeMovedThrough = false
   var onTheMove: Option[Vector[Square]] = None
@@ -21,13 +21,13 @@ case class Obstacle() extends Actor:
   
   def move(to: Square, alongPath: Vector[Square]) = ()
 
-case class Character(val battle: Battle,
+case class Character(b: Battle,
                      val name: String,
                      startHP: Int,
                      private val armor: Int,
                      private val agility: Int,
                      private val abilities: Vector[Ability]
-                    ) extends Actor:
+                    ) extends Actor(b):
 
   val canBeMovedThrough: Boolean = false
   var turnEnded = false

@@ -39,7 +39,21 @@ class Battle:
   enemyTeam(2).move(this.battleground.getSquare(enemyLocations(2)._1, enemyLocations(2)._2).head, Vector())
   enemyTeam(3).move(this.battleground.getSquare(enemyLocations(3)._1, enemyLocations(3)._2).head, Vector())
   
-  battleground.addObstacles(60)
+  addObstacles(60)
+  
+  def addObstacles(amount: Int) =
+    val obstacleLocations: Seq[(Int, Int)] =
+      for i <- 0 until amount yield
+        (Random.nextInt(this.battleground.width), Random.nextInt(this.battleground.height))
+
+    this.battleground.area.foreach(_.foreach(i =>
+      if obstacleLocations.exists(j => i.x == j._1 && i.y == j._2) then
+        if i.isEmpty then
+          i.addActor(Obstacle(this))
+          this.battleground.squaresWithObstacles += i
+      else
+        ()
+    ))
 
   def playerLost = playerTeam.forall(_.isDown)
 

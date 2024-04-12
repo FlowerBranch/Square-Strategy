@@ -20,20 +20,6 @@ class Battleground(val width: Int, val height: Int):
       movementRadius.head.map(_._1)
     else
       Vector()
-  
-  def addObstacles(amount: Int) =
-    val obstacleLocations: Seq[(Int, Int)] =
-      for i <- 0 until amount yield
-        (Random.nextInt(this.width), Random.nextInt(this.height))
-
-    area.foreach(_.foreach(i =>
-      if obstacleLocations.exists(j => i.x == j._1 && i.y == j._2) then
-        if i.isEmpty then
-          i.addActor(Obstacle())
-          squaresWithObstacles += i
-      else
-        ()
-    ))
 
   def getSquare(x: Int, y: Int): Option[Square] =
     this.area.flatMap(_.find(i =>

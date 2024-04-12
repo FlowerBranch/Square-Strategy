@@ -65,7 +65,7 @@ class HeroDisplay(hero: Character):
           useButtonHandler.children.remove(0, useButtonHandler.children.size - 1)
 
         var currentDirection = directions.head
-        currentArea = of.areaOfEffect(hero, currentDirection._1)
+        currentArea = of.areaOfEffect(hero.location.head, currentDirection._1)
 
         val rotateButton = new Button("Rotate"):
           onAction = (event) =>
@@ -73,12 +73,12 @@ class HeroDisplay(hero: Character):
               currentDirection = directions.find(p => p._2 == currentDirection._2 + 1).head
             else
               currentDirection = directions.head
-            currentArea = of.areaOfEffect(hero, currentDirection._1)
+            currentArea = of.areaOfEffect(hero.location.head, currentDirection._1)
 
         val useButton = new Button("Use Ability"):
           onAction = (event) =>
             if !hero.abilityUsed then
-              of.use(hero, currentDirection._1)
+              of.use(hero.location.head, currentDirection._1)
               hero.abilityUsed = true
               if hero.turnIsOver then
                 emptyTime()
