@@ -20,14 +20,14 @@ sealed trait Ability:
             if j.hasCharacter then
               val c = j.getActor
               if c == Some(user) then
-                0 - userDamage
+                0
               else if c.head.battle.playerTeam.contains(c.head) then
                 0 - otherDamage
               else
                 0 + otherDamage
             else
               0
-          )).sum
+          )).sum - userDamage
         )).toVector
 
     possibleDamage.maxBy(p => p._2)
