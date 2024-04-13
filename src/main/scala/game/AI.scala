@@ -17,10 +17,9 @@ class AI:
     square
 
   private def moveCharacter(character: Character, to: Square): Unit =
-    if to != character.location.head then
-      val radius = character.battle.battleground.squaresWithinRadius(character.location.head, character.getAgility)
-      val path = character.battle.battleground.squaresAlongPath(to, radius)
-      character.battle.enemyTeam(characterIndex).onTheMove = Some(path)
+    val radius = character.battle.battleground.squaresWithinRadius(character.location.head, character.getAgility)
+    val path = character.battle.battleground.squaresAlongPath(to, radius)
+    character.battle.enemyTeam(characterIndex).onTheMove = Some(path)
 
   def nextAction(in: Battle) =
 

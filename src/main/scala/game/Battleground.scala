@@ -13,7 +13,6 @@ class Battleground(val width: Int, val height: Int):
 
   var lockedSquare: Option[Square] = None
   var movementRadius: Option[Vector[(Square, Int)]] = None
-  var squaresWithObstacles = Buffer[Square]()
 
   def getCurrentRadius: Vector[Square] =
     if movementRadius.isDefined then
@@ -50,7 +49,7 @@ class Battleground(val width: Int, val height: Int):
 
     def moveToOrigin(from: (Square, Int)): Vector[Square] =
       if from._2 == 0 then
-        throw Exception("You are already in that square")
+        Vector()
       else if from._2 == 1 then
         Vector(from._1)
       else

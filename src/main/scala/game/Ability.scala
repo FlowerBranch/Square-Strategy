@@ -2,7 +2,7 @@ package game
 
 import Direction.*
 
-sealed trait Ability:
+sealed trait Ability://TODO ability that pushes obstacles
 
   val name: String
   val directions = Vector(Right, Down, Left, Up)

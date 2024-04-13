@@ -1,13 +1,15 @@
 package game
 
 import scalafx.animation.AnimationTimer
-
 import scala.util.Random
+import scala.collection.mutable.Buffer
 
 class Battle:
 
   
-  val battleground = Battleground(20, 15) //TODO battleground still returns current square of residence
+  val battleground = Battleground(20, 15)
+
+  addObstacles(60)
   
   val enemyAI = AI()
   
@@ -17,46 +19,33 @@ class Battle:
     Character(this, "raimo3", 200, 20, 20, Vector(Pyromania, Stab)),
     Character(this, "raimo4", 200, 20, 5, Vector(Pyromania, Stab))
   )
-  
-  val playerLocations: Seq[(Int, Int)] =
-    for i <- 0 until 4 yield
-      (Random.nextInt(this.battleground.width), Random.nextInt(this.battleground.height))
-      
-  playerTeam(0).move(this.battleground.getSquare(playerLocations(0)._1, playerLocations(0)._2).head, Vector())
-  playerTeam(1).move(this.battleground.getSquare(playerLocations(1)._1, playerLocations(1)._2).head, Vector())
-  playerTeam(2).move(this.battleground.getSquare(playerLocations(2)._1, playerLocations(2)._2).head, Vector())
-  playerTeam(3).move(this.battleground.getSquare(playerLocations(3)._1, playerLocations(3)._2).head, Vector())
-  
+
   val enemyTeam = Vector[Character](
     Character(this, "jarmo1", 200, 20, 10, Vector(Pyromania, Stab)),
     Character(this, "jarmo2", 200, 20, 15, Vector(Pyromania, Stab)),
     Character(this, "jarmo3", 200, 20, 20, Vector(Pyromania, Stab)),
     Character(this, "jarmo4", 200, 20, 5, Vector(Pyromania, Stab))
   )
-  val enemyLocations: Seq[(Int, Int)] =//TODO try to make failsafe for characters ending up on same square
-    for i <- 0 until 4 yield
-      (Random.nextInt(this.battleground.width), Random.nextInt(this.battleground.height))
-      
-  enemyTeam(0).move(this.battleground.getSquare(enemyLocations(0)._1, enemyLocations(0)._2).head, Vector())
-  enemyTeam(1).move(this.battleground.getSquare(enemyLocations(1)._1, enemyLocations(1)._2).head, Vector())
-  enemyTeam(2).move(this.battleground.getSquare(enemyLocations(2)._1, enemyLocations(2)._2).head, Vector())
-  enemyTeam(3).move(this.battleground.getSquare(enemyLocations(3)._1, enemyLocations(3)._2).head, Vector())
-  
-  addObstacles(60)
-  
-  def addObstacles(amount: Int) =
-    val obstacleLocations: Seq[(Int, Int)] =
-      for i <- 0 until amount yield
-        (Random.nextInt(this.battleground.width), Random.nextInt(this.battleground.height))
 
-    this.battleground.area.foreach(_.foreach(i =>
-      if obstacleLocations.exists(j => i.x == j._1 && i.y == j._2) then
-        if i.isEmpty then
-          i.addActor(Obstacle(this))
-          this.battleground.squaresWithObstacles += i
-      else
-        ()
-    ))
+  placeCharacters(playerTeam, enemyTeam)
+
+  def randomEmptySquares(amount: Int): Vector[Square] =
+    val squares = Buffer[Square]()
+    while squares.size < amount do
+      val location = (Random.nextInt(this.battleground.width), Random.nextInt(this.battleground.height))
+      val candidateSquare = this.battleground.getSquare(location._1, location._2).head
+      if candidateSquare.isEmpty && !squares.contains(candidateSquare) then
+        squares += candidateSquare
+    squares.toVector
+
+  def placeCharacters(player: Vector[Character], enemy: Vector[Character]): Unit =
+    val characters = player ++ enemy
+    val squares = randomEmptySquares(8)
+    (characters zip squares).foreach(p => p._1.move(p._2, Vector()))
+
+  def addObstacles(amount: Int) =
+    val squares = randomEmptySquares(amount)
+    squares.foreach(_.addActor(Obstacle(this)))
 
   def playerLost = playerTeam.forall(_.isDown)
 
