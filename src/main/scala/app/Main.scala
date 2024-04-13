@@ -74,22 +74,23 @@ object Main extends JFXApp3:
                   i.square.highlightSwitch()
 
               case MouseEvent.MouseClicked =>
-                if !i.square.isLocked
-                  && battle.playerTeam.exists(j => Some(j) == i.square.getActor && !j.turnIsOver)
-                  && battle.battleground.lockedSquare.isEmpty then
-                  i.square.lockSwitch()
-                  battle.battleground.lockedSquare = Some(i.square)
-                  val start = battle.battleground.lockedSquare.head
-                  val agility = i.square.getActor.head.getAgility
-                  battle.battleground.movementRadius = Some(battle.battleground.squaresWithinRadius(start, agility))
-                else if battle.battleground.lockedSquare.isDefined then
-                  battle.battleground.lockedSquare.head.getActor.head.onTheMove = Some(battle.battleground.squaresAlongPath(i.square, battle.battleground.movementRadius.head))
-                  if battle.battleground.lockedSquare.head.getActor.head.onTheMove.head.contains(i.square) then
-                    battle.battleground.lockedSquare.head.lockSwitch()
-                    battle.battleground.lockedSquare = None
-                    battle.battleground.movementRadius = None
-                else
-                  ()
+
+                  if !i.square.isLocked
+                    && battle.playerTeam.exists(j => Some(j) == i.square.getActor && !j.turnIsOver)
+                    && battle.battleground.lockedSquare.isEmpty then
+                    i.square.lockSwitch()
+                    battle.battleground.lockedSquare = Some(i.square)
+                    val start = battle.battleground.lockedSquare.head
+                    val agility = i.square.getActor.head.getAgility
+                    battle.battleground.movementRadius = Some(battle.battleground.squaresWithinRadius(start, agility))
+                  else if battle.battleground.lockedSquare.isDefined then
+                    battle.battleground.lockedSquare.head.getActor.head.onTheMove = Some(battle.battleground.squaresAlongPath(i.square, battle.battleground.movementRadius.head))
+                    if battle.battleground.lockedSquare.head.getActor.head.onTheMove.head.contains(i.square) then
+                      battle.battleground.lockedSquare.head.lockSwitch()
+                      battle.battleground.lockedSquare = None
+                      battle.battleground.movementRadius = None
+                  else
+                    ()
 
               case _ =>
                 if i.square.isHighlighted then

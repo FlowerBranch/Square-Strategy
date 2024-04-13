@@ -45,7 +45,7 @@ class AI:
               moveCharacter(currentCharacter, actions._1)
               actionIndex += 1
             case 1 =>
-              actions._2.use(currentCharacter.location.head, actions._3)
+              actions._2.use(currentCharacter, actions._3)
               actionIndex += 1
             case 2 =>
               moveCharacter(currentCharacter, actions._4)

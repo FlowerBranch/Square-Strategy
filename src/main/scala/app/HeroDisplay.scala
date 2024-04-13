@@ -78,7 +78,7 @@ class HeroDisplay(hero: Character):
         val useButton = new Button("Use Ability"):
           onAction = (event) =>
             if !hero.abilityUsed then
-              of.use(hero.location.head, currentDirection._1)
+              of.use(hero, currentDirection._1)
               hero.abilityUsed = true
               if hero.turnIsOver then
                 emptyTime()

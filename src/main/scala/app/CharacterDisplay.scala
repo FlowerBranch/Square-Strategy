@@ -24,7 +24,7 @@ class CharacterDisplay(of: Character):
       graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
   val name = Label(shifter + of.name)
   var health = Label(shifter + s"HP: ${of.currentHP}/${of.maxHealth}")
-  var status = Label(shifter + "Status: " + of.getStatus.mkString)
+  var status = Label(shifter + "Statuses: " + of.getStatus.mkString(", "))
   
   characterBox.add(portrait, 0, 0, 1, 1)
   characterBox.add(name, 1, 0, 1, 1)
@@ -35,7 +35,7 @@ class CharacterDisplay(of: Character):
     if characterBox.children.nonEmpty then
       characterBox.children.remove(0, characterBox.children.size - 1)
     health = Label(shifter + s"HP: ${of.currentHP}/${of.maxHealth}")
-    status = Label(shifter + "Status: " + of.getStatus.mkString)
+    status = Label(shifter + "Statuses: " + of.getStatus.mkString(", "))
     characterBox.add(portrait, 0, 0, 1, 1)
     characterBox.add(name, 1, 0, 1, 1)
     characterBox.add(health, 0, 1, 1, 1)
