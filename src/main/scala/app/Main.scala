@@ -36,14 +36,17 @@ object Main extends JFXApp3:
     val gameScene = Scene(parent = root)
 
     val infoBox = makeGrid(1, 4)
+    infoBox.gridLinesVisible = true
     infoBox.background = Background.fill(White)
 
     val heroBoxController = makeGrid(1, 1)
 
     val playerBox = makeGrid(2, 2)
+    playerBox.gridLinesVisible = true
     val goodGuyBoxes = makeCharacterBoxes(playerBox, battle.playerTeam)
 
     val enemyBox = makeGrid(2, 2)
+    enemyBox.gridLinesVisible = true
     val badGuyBoxes = makeCharacterBoxes(enemyBox, battle.enemyTeam)
 
     infoBox.add(heroBoxController, 0, 1, 1, 1)
@@ -51,7 +54,7 @@ object Main extends JFXApp3:
     infoBox.add(enemyBox, 0, 3, 1, 1)
 
     root.add(infoBox, 1, 0, 1, 1)
-    root.add(battleGrid, 0, 0, 1, 2)
+    root.add(battleGrid, 0, 0, 1, 1)
 
     stage = new JFXApp3.PrimaryStage:
       title = "Square Strategy"

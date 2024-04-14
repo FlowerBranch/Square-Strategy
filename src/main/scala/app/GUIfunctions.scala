@@ -7,8 +7,7 @@ import scalafx.scene.paint.Color.Black
 
 def makeGrid(ofDimX: Int, ofDimY: Int) =
 
-  val grid =  new GridPane():
-    gridLinesVisible = true
+  val grid = GridPane()
     
   val column = new ColumnConstraints:
     percentWidth = 100.0 / ofDimX.toDouble

@@ -9,24 +9,6 @@ class SquareCanvas(val square: Square):
   val canvas = new Canvas():
     width = 50
     height = 50
-    if square.battleground.getCurrentRadius.contains(square) then
-      graphicsContext2D.setFill(LightBlue)
-      graphicsContext2D.fillRect(0, 0, width.toDouble, height.toDouble)
-    else
-      graphicsContext2D.setFill(Brown)
-      graphicsContext2D.fillRect(0, 0, width.toDouble, height.toDouble)
-    if !square.isEmpty then
-      square.getActor.head match
-        case obs: Obstacle =>
-          graphicsContext2D.setFill(Grey)
-          graphicsContext2D.fillRect(0, 10, width.toDouble, height.toDouble - 10)
-        case c: Character =>
-          if c.battle.playerTeam.contains(c) then
-            graphicsContext2D.setFill(Blue)
-            graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
-          else
-            graphicsContext2D.setFill(Black)
-            graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
 
   def redraw() =
     if square.isHighlighted || square.isLocked then

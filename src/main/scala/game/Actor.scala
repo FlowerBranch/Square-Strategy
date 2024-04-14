@@ -6,6 +6,7 @@ sealed trait Actor(val battle: Battle):
   val canBeMovedThrough: Boolean
   var onTheMove: Option[Vector[Square]]
   var currentSquare: Option[Square] = None
+  var armorChange: Int
   
   def getAgility: Int
   
@@ -25,6 +26,7 @@ case class Obstacle(in: Battle) extends Actor(in):
 
   val canBeMovedThrough = false
   var onTheMove: Option[Vector[Square]] = None
+  var armorChange = 0
   
   def getAgility = 0
   
@@ -39,7 +41,7 @@ case class Obstacle(in: Battle) extends Actor(in):
 case class Character(in: Battle,
                      val name: String,
                      startHP: Int,
-                     private val armor: Int,
+                     private val defaultArmor: Int,
                      private val agility: Int,
                      private val abilities: Vector[Ability]
                     ) extends Actor(in):
@@ -48,6 +50,7 @@ case class Character(in: Battle,
   var turnEnded = false
   var abilityUsed = false
   var onTheMove: Option[Vector[Square]] = None
+  var armorChange = 0
   private val maxHP = startHP
   private var hp = startHP
   private var statuses = Vector[StatusEffect]()
@@ -57,6 +60,7 @@ case class Character(in: Battle,
     this.turnAgility = this.agility
     abilityUsed = false
     turnEnded = false
+    this.statuses.foreach(_.applyEffect(this))
     
   def applyStatus(statusEffect: Option[StatusEffect]) =
     if statusEffect.isDefined then
@@ -94,11 +98,13 @@ case class Character(in: Battle,
   def currentHP = this.hp
 
   def takeDamage(amount: Int) =
-    hp = max(hp - max(0, amount - armor), 0)
+    hp = max(hp - max(0, amount - currentArmor), 0)
 
   def healDamage(amount: Int) =
     hp = min(hp + amount, maxHP)
 
+  def currentArmor = defaultArmor + armorChange
+  
   def isDown = hp <= 0
   
   def getAbilities = abilities

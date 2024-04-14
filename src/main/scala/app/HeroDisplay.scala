@@ -18,7 +18,6 @@ class HeroDisplay(hero: Character):
     hero.battle.battleground.movementRadius = None
 
   val heroBox = makeGrid(4, 4)
-  heroBox.gridLinesVisible = false
 
   val portrait = new Canvas():
     width = 50
@@ -49,9 +48,7 @@ class HeroDisplay(hero: Character):
   heroBox.add(endTurnButton, 1, 1, 1, 1)
 
   val rotateButtonHandler = makeGrid(1, 1)
-  rotateButtonHandler.gridLinesVisible = false
   val useButtonHandler = makeGrid(1, 1)
-  useButtonHandler.gridLinesVisible = false
 
   heroBox.add(useButtonHandler, 2, 1, 2, 2)
   heroBox.add(rotateButtonHandler, 1, 3, 1, 1)
