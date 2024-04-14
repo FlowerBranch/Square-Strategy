@@ -106,3 +106,17 @@ object Stab extends Ability:
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
     super.calculateDamageHelper(square, user, 0, 100)
+    
+object Earthquake extends Ability:
+  
+  val name = "Earthquake"
+  val status = None
+  
+  def areaOfEffect(square: Square, direction: Direction) =
+    square.allNeighbors.filter(_ != square)
+    
+  def use(user: Actor, direction: Direction): Unit =
+    useWithParams(user, direction, 0, 100, None)
+    
+  def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
+    super.calculateDamageHelper(square, user, 0, 100)
