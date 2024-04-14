@@ -5,6 +5,7 @@ import Direction.*
 sealed trait Ability://TODO ability that pushes obstacles
 
   val name: String
+  val pushDistance: Int
   def status: Option[Statuseffect]
   val directions = Vector(Right, Down, Left, Up)
 
@@ -31,7 +32,7 @@ sealed trait Ability://TODO ability that pushes obstacles
     else
       ()
 
-  def useWithParams(user: Actor, direction: Direction, userDamage: Int, otherDamage: Int, pushDistance: Int) =
+  def useWithParams(user: Actor, direction: Direction, userDamage: Int, otherDamage: Int) =
     areaOfEffect(user.location.head, direction).filter(!_.isEmpty).map(_.getActor.head).foreach(handleActor(_))
 
     def handleActor(actor: Actor) =
@@ -50,8 +51,8 @@ sealed trait Ability://TODO ability that pushes obstacles
       else
         ()
 
-      if pushDistance != 0 then
-        push(actor, user, pushDistance)
+      if this.pushDistance != 0 then
+        push(actor, user, this.pushDistance)
 
     end handleActor
 
@@ -87,6 +88,9 @@ sealed trait Ability://TODO ability that pushes obstacles
         if square == target then
           score += -statusScore - userDamage
 
+      if !target.isEmpty && this.pushDistance != 0 then
+        score += 10
+
       score
 
     end calculateScore
@@ -105,41 +109,44 @@ sealed trait Ability://TODO ability that pushes obstacles
 object Pyromania extends Ability:
 
   val name = "Pyromania"
+  val pushDistance = 0
   def status = Some(Burn(2))
 
   def areaOfEffect(square: Square, direction: Direction) =
     square.allNeighbors.flatMap(_.allNeighbors).distinct
 
   def use(user: Actor, direction: Direction): Unit =
-    useWithParams(user, direction, 20, 100, 0)
+    useWithParams(user, direction, 30, 100)
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
-    calculateDamageHelper(square, user, 20, 100)
+    calculateDamageHelper(square, user, 30, 100)
 
 object Stab extends Ability:
 
   val name = "Stab"
+  val pushDistance = 0
   def status = Some(Bleeding(2))
 
   def areaOfEffect(square: Square, direction: Direction) =
     square.squaresInDirection(1, direction)
 
   def use(user: Actor, direction: Direction): Unit =
-    useWithParams(user, direction, 0, 150, 0)
+    useWithParams(user, direction, 0, 120)
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
-    super.calculateDamageHelper(square, user, 0, 100)
+    super.calculateDamageHelper(square, user, 0, 120)
 
 object Earthquake extends Ability:
 
   val name = "Earthquake"
+  val pushDistance = 2
   def status = None
 
   def areaOfEffect(square: Square, direction: Direction) =
     square.allNeighbors.filter(_ != square)
 
   def use(user: Actor, direction: Direction): Unit =
-    useWithParams(user, direction, 0, 100, 2)
+    useWithParams(user, direction, 0, 150)
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
-    super.calculateDamageHelper(square, user, 0, 100)
+    super.calculateDamageHelper(square, user, 0, 150)
