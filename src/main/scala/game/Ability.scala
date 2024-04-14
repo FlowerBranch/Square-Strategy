@@ -2,7 +2,7 @@ package game
 
 import Direction.*
 
-sealed trait Ability://TODO ability that pushes obstacles
+sealed trait Ability:
 
   val name: String
   val pushDistance: Int
@@ -15,7 +15,7 @@ sealed trait Ability://TODO ability that pushes obstacles
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int)
 
-  def push(actor: Actor, user: Actor, distance: Int): Unit =
+  def push(actor: Actor, user: Actor, distance: Int, useDirection: Direction): Unit =
 
     def startPushing(in: Direction) =
       val squares = actor.location.head.squaresInDirection(distance, in).takeWhile(_.isEmpty)
@@ -52,7 +52,7 @@ sealed trait Ability://TODO ability that pushes obstacles
         ()
 
       if this.pushDistance != 0 then
-        push(actor, user, this.pushDistance)
+        push(actor, user, this.pushDistance, direction)
 
     end handleActor
 
@@ -136,14 +136,14 @@ object Stab extends Ability:
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
     super.calculateDamageHelper(square, user, 0, 120)
 
-object Earthquake extends Ability:
+object Burst extends Ability:
 
-  val name = "Earthquake"
+  val name = "Burst"
   val pushDistance = 2
   def status = None
 
   def areaOfEffect(square: Square, direction: Direction) =
-    square.allNeighbors.filter(_ != square)
+    square.nonDiagonalNeighbors
 
   def use(user: Actor, direction: Direction): Unit =
     useWithParams(user, direction, 0, 150)

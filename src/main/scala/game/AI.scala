@@ -76,9 +76,9 @@ class AI:
       val possibleSquares = radius.map(_._1)
 
       def calculateForAbility(ability: Ability): Option[(Square, Ability, Direction, Int)] =
-        val playerSquares = in.playerTeam.filter(!_.isDown).map(_.location.head)
-        val abilitySquares = playerSquares.flatMap(i => directions.flatMap(j => ability.areaOfEffect(i, j)).distinct).distinct
-        val squaresToTest = possibleSquares.filter(i => abilitySquares.contains(i) && !playerSquares.contains(i))
+        val relevantSquares = (in.playerTeam.filter(!_.isDown) ++ in.obstacles).map(_.location.head)
+        val abilitySquares = relevantSquares.flatMap(i => directions.flatMap(j => ability.areaOfEffect(i, j)).distinct).distinct
+        val squaresToTest = possibleSquares.filter(i => abilitySquares.contains(i) && !relevantSquares.contains(i))
 
         if squaresToTest.isEmpty then
           None
@@ -87,15 +87,15 @@ class AI:
           Some((chosenOne._1, ability, chosenOne._2, chosenOne._3))
       end calculateForAbility
       
-      val recommendations: Vector[Option[(Square, Ability, Direction, Int)]] =
+      val recommendations: Vector[(Square, Ability, Direction, Int)] =
         (for i <- 0 until 3 yield
-        calculateForAbility(of.getAbilities(i))).toVector
+        calculateForAbility(of.getAbilities(i))).flatten.toVector
 
-      if recommendations.isEmpty || recommendations.forall(_.isEmpty) then
+      if recommendations.isEmpty then
         outOfReach = true
         None
       else
-        val chosenAbility = recommendations.maxBy(_.head._4).head
+        val chosenAbility = recommendations.maxBy(_._4)
         val agilityMinus = radius.find(i => chosenAbility._1 == i._1).head._2
         val secondRadius = of.battle.battleground.squaresWithinRadius(chosenAbility._1, of.getAgility - agilityMinus)
         val secondSquare = secondRadius.maxBy(i => of.battle.playerTeam.filter(!_.isDown).map(j => j.location.head.distanceTo(i._1)).sum)._1

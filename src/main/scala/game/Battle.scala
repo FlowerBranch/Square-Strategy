@@ -3,13 +3,11 @@ package game
 import io.*
 import scalafx.animation.AnimationTimer
 
-import java.io.StringReader
+import java.io.{FileReader, StringReader}
 import scala.util.Random
 import scala.collection.mutable.Buffer
 
 class Battle:
-
-
 
   val battleground = Battleground(20, 15)
   var obstacles = Vector[Obstacle]()
@@ -18,9 +16,9 @@ class Battle:
   
   val enemyAI = AI()
 
-  //val playerTeam = CharacterIO.readTeam(StringReader("./data/playerteam.char"), this)
-  //val enemyTeam = CharacterIO.readTeam(StringReader("./data/enemyteam.char"), this)
-
+  val playerTeam = CharacterIO.readTeam("./data/playerteam.char", this)
+  val enemyTeam = CharacterIO.readTeam("./data/enemyteam.char", this)
+/*
   val playerTeam = Vector[Character](
     Character(this, "raimo1", 200, 20, 10, Vector(Pyromania, Stab, Earthquake)),
     Character(this, "raimo2", 200, 20, 15, Vector(Pyromania, Stab, Earthquake)),
@@ -34,7 +32,7 @@ class Battle:
     Character(this, "jarmo3", 200, 20, 20, Vector(Pyromania, Stab, Earthquake)),
     Character(this, "jarmo4", 200, 20, 5, Vector(Pyromania, Stab, Earthquake))
   )
-
+*/
   placeCharacters(playerTeam, enemyTeam)
 
   def randomEmptySquares(amount: Int): Vector[Square] =
