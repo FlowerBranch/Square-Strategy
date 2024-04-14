@@ -5,7 +5,7 @@ import Direction.*
 sealed trait Ability://TODO ability that pushes obstacles
 
   val name: String
-  val status: Option[StatusEffect]
+  def status: Option[Statuseffect]
   val directions = Vector(Right, Down, Left, Up)
 
   def areaOfEffect(square: Square, direction: Direction): Vector[Square]
@@ -14,22 +14,45 @@ sealed trait Ability://TODO ability that pushes obstacles
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int)
 
-  def useWithParams(user: Actor, direction: Direction, userDamage: Int, otherDamage: Int, statusToApply: Option[StatusEffect]) =
+  def push(actor: Actor, user: Actor, distance: Int): Unit =
+
+    def startPushing(in: Direction) =
+      val squares = actor.location.head.squaresInDirection(distance, in).takeWhile(_.isEmpty)
+      actor.onTheMove = Some(squares)
+      actor.isBeingPushed = true
+
+    val xDirection = user.location.head.xDirectionOf(actor.location.head)
+    val yDirection = user.location.head.yDirectionOf(actor.location.head)
+    if (xDirection.isDefined || yDirection.isDefined) && !(xDirection.isDefined && yDirection.isDefined) then
+      if xDirection.isDefined then
+        startPushing(xDirection.head)
+      else
+        startPushing(yDirection.head)
+    else
+      ()
+
+  def useWithParams(user: Actor, direction: Direction, userDamage: Int, otherDamage: Int, pushDistance: Int) =
     areaOfEffect(user.location.head, direction).filter(!_.isEmpty).map(_.getActor.head).foreach(handleActor(_))
 
     def handleActor(actor: Actor) =
+
       if actor == user then
         actor.takeDamage(userDamage)
       else
         actor.takeDamage(otherDamage)
-      if statusToApply.isDefined then
-        val existingStatus = actor.getStatuses.find(_.name == statusToApply.head.name)
+
+      if this.status.isDefined then
+        val existingStatus = actor.getStatuses.find(_.name == this.status.head.name)
         if existingStatus.isDefined then
-          existingStatus.head.increaseDuration(statusToApply.head.duration)
+          existingStatus.head.increaseDuration(this.status.head.duration)
         else
-          actor.applyStatus(statusToApply)
+          actor.applyStatus(this.status)
       else
         ()
+
+      if pushDistance != 0 then
+        push(actor, user, pushDistance)
+
     end handleActor
 
   end useWithParams
@@ -38,7 +61,7 @@ sealed trait Ability://TODO ability that pushes obstacles
   def calculateDamageHelper(square: Square, user: Character, userDamage: Int, otherDamage: Int): (Square, Direction, Int) =
 
     def calculateScore(target: Square): Int =
-      
+
       def statusScore: Int =
         if this.status.isDefined then
           if this.status.head.isNegative then
@@ -48,7 +71,7 @@ sealed trait Ability://TODO ability that pushes obstacles
         else
           0
       end statusScore
-      
+
       var score = 0
 
       if target.hasCharacter then
@@ -63,11 +86,11 @@ sealed trait Ability://TODO ability that pushes obstacles
       else
         if square == target then
           score += -statusScore - userDamage
-        
+
       score
-      
+
     end calculateScore
- 
+
     val possibleDamage: Vector[(Direction, Int)] =
       (for i <- 0 until 4 yield
         val score = this.areaOfEffect(square, directions(i)).map(calculateScore(_)).sum
@@ -82,13 +105,13 @@ sealed trait Ability://TODO ability that pushes obstacles
 object Pyromania extends Ability:
 
   val name = "Pyromania"
-  val status = Some(Burn(3))
-  
+  def status = Some(Burn(2))
+
   def areaOfEffect(square: Square, direction: Direction) =
     square.allNeighbors.flatMap(_.allNeighbors).distinct
 
   def use(user: Actor, direction: Direction): Unit =
-    useWithParams(user, direction, 20, 100, Some(Burn(3)))
+    useWithParams(user, direction, 20, 100, 0)
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
     calculateDamageHelper(square, user, 20, 100)
@@ -96,27 +119,27 @@ object Pyromania extends Ability:
 object Stab extends Ability:
 
   val name = "Stab"
-  val status = Some(Bleeding(2))
+  def status = Some(Bleeding(2))
 
   def areaOfEffect(square: Square, direction: Direction) =
     square.squaresInDirection(1, direction)
 
   def use(user: Actor, direction: Direction): Unit =
-    useWithParams(user, direction, 0, 150, Some(Bleeding(2)))
+    useWithParams(user, direction, 0, 150, 0)
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
     super.calculateDamageHelper(square, user, 0, 100)
-    
+
 object Earthquake extends Ability:
-  
+
   val name = "Earthquake"
-  val status = None
-  
+  def status = None
+
   def areaOfEffect(square: Square, direction: Direction) =
     square.allNeighbors.filter(_ != square)
-    
+
   def use(user: Actor, direction: Direction): Unit =
-    useWithParams(user, direction, 0, 100, None)
-    
+    useWithParams(user, direction, 0, 100, 2)
+
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
     super.calculateDamageHelper(square, user, 0, 100)

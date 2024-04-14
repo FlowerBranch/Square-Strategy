@@ -77,8 +77,7 @@ class HeroDisplay(hero: Character):
             if !hero.abilityUsed then
               of.use(hero, currentDirection._1)
               hero.abilityUsed = true
-              if hero.turnIsOver then
-                emptyTime()
+              emptyTime()
             else
               ()
 
@@ -91,3 +90,4 @@ class HeroDisplay(hero: Character):
 
   heroBox.add(abilityButtons(0), 0, 2, 1, 1)
   heroBox.add(abilityButtons(1), 1, 2, 1, 1)
+  heroBox.add(abilityButtons(2), 0, 3, 1, 1)

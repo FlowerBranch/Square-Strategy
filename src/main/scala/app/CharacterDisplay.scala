@@ -25,7 +25,7 @@ class CharacterDisplay(of: Character):
       graphicsContext2D.fillOval(0, 0, 50, 50)
   val name = Label(shifter + of.name)
   var armor = Label(shifter + s"Armor: ${of.currentArmor}")
-  var statuses = Label(" Statuses: " + of.getStatus.mkString(", "))
+  var statuses = Label(" Statuses: " + of.getStatuses.mkString(", "))
   var healthBar = new Canvas():
     width = 180
     height = 20
@@ -42,7 +42,7 @@ class CharacterDisplay(of: Character):
     if characterBox.children.nonEmpty then
       characterBox.children.remove(0, characterBox.children.size - 1)
     armor = Label(shifter + s"Armor: ${of.currentArmor}")
-    statuses = Label(" Statuses: " + of.getStatus.mkString(", "))
+    statuses = Label(" Statuses: " + of.getStatuses.mkString(", "))
     healthBar = new Canvas():
       width = 180
       height = 20

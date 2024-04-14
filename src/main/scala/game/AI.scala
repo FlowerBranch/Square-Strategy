@@ -88,14 +88,14 @@ class AI:
       end calculateForAbility
       
       val recommendations: Vector[Option[(Square, Ability, Direction, Int)]] =
-        (for i <- 0 until 2 yield
+        (for i <- 0 until 3 yield
         calculateForAbility(of.getAbilities(i))).toVector
 
-      if recommendations.forall(_.isEmpty) then
+      if recommendations.isEmpty || recommendations.forall(_.isEmpty) then
         outOfReach = true
         None
       else
-        val chosenAbility = recommendations.head.maxBy(_._4)
+        val chosenAbility = recommendations.maxBy(_.head._4).head
         val agilityMinus = radius.find(i => chosenAbility._1 == i._1).head._2
         val secondRadius = of.battle.battleground.squaresWithinRadius(chosenAbility._1, of.getAgility - agilityMinus)
         val secondSquare = secondRadius.maxBy(i => of.battle.playerTeam.filter(!_.isDown).map(j => j.location.head.distanceTo(i._1)).sum)._1
