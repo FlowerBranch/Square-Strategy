@@ -19,7 +19,7 @@ class AI:
   private def moveCharacter(character: Character, to: Square): Unit =
     val radius = character.battle.battleground.squaresWithinRadius(character.location.head, character.getAgility)
     val path = character.battle.battleground.squaresAlongPath(to, radius)
-    character.battle.enemyTeam(characterIndex).onTheMove = Some(path)
+    character.battle.enemyTeam(characterIndex).onTheMove = path
 
   def nextAction(in: Battle) =
 

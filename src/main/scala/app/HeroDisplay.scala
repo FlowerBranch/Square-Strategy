@@ -1,10 +1,13 @@
 package app
 
+import app.Main.stage
 import game.*
 import game.Direction.*
 import scalafx.scene.canvas.Canvas
-import scalafx.scene.control.{Button, Label}
-import scalafx.scene.paint.Color.{Black, Blue}
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.{Alert, Button, ButtonType, Label}
+import scalafx.scene.paint.Color.{Black, Blue, Red}
+import scalafx.scene.shape.Circle
 
 class HeroDisplay(hero: Character):
 
@@ -30,6 +33,13 @@ class HeroDisplay(hero: Character):
       graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
 
   heroBox.add(portrait, 0, 0, 1, 1)
+
+  val hasBeenUsedAlert = new Alert(AlertType.Confirmation):
+    initOwner(stage)
+    title = "OOF!"
+    headerText = "This character has already used its ability this turn"
+    graphic = Circle(20, Red)
+    buttonTypes = Array(ButtonType.OK)
 
   val name = Label(hero.name)
   heroBox.add(name, 1, 0, 1, 1)
@@ -79,7 +89,7 @@ class HeroDisplay(hero: Character):
               hero.abilityUsed = true
               emptyTime()
             else
-              ()
+              hasBeenUsedAlert.show()
 
         rotateButtonHandler.add(rotateButton, 0, 0, 1, 1)
         useButtonHandler.add(useButton, 0, 0, 1, 1)

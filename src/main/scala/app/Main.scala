@@ -12,6 +12,8 @@ import scalafx.event.*
 import scalafx.scene.input.*
 import scalafx.Includes.*
 import scalafx.scene.control.*
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.shape.Circle
 
 object Main extends JFXApp3:
 
@@ -63,6 +65,13 @@ object Main extends JFXApp3:
       fullScreen = true
       scene = gameScene
 
+    val outOfRangeAlert = new Alert(AlertType.Confirmation):
+      initOwner(stage)
+      title = "YIKES!"
+      headerText = "You can't move there"
+      graphic = Circle(20, Red)
+      buttonTypes = Array(ButtonType.OK)
+
     battleEvents()
     battle.play(drawUpdate())
 
@@ -87,11 +96,14 @@ object Main extends JFXApp3:
                     val agility = i.square.getActor.head.getAgility
                     battle.battleground.movementRadius = Some(battle.battleground.squaresWithinRadius(start, agility))
                   else if battle.battleground.lockedSquare.isDefined then
-                    battle.battleground.lockedSquare.head.getActor.head.onTheMove = Some(battle.battleground.squaresAlongPath(i.square, battle.battleground.movementRadius.head))
-                    if battle.battleground.lockedSquare.head.getActor.head.onTheMove.head.contains(i.square) then
+                    val targetSquare = battle.battleground.squaresAlongPath(i.square, battle.battleground.movementRadius.head)
+                    if targetSquare.isDefined then
+                      battle.battleground.lockedSquare.head.getActor.head.onTheMove = targetSquare
                       battle.battleground.lockedSquare.head.lockSwitch()
                       battle.battleground.lockedSquare = None
                       battle.battleground.movementRadius = None
+                    else
+                      outOfRangeAlert.show()
                   else
                     ()
 
