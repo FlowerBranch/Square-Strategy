@@ -17,12 +17,7 @@ class CharacterDisplay(of: Character):
   val portrait = new Canvas():
     width = 50
     height = 50
-    if of.battle.playerTeam.contains(of) then
-      graphicsContext2D.setFill(Blue)
-      graphicsContext2D.fillOval(0, 0, 50, 50)
-    else
-      graphicsContext2D.setFill(Black)
-      graphicsContext2D.fillOval(0, 0, 50, 50)
+    graphicsContext2D.drawImage(of.portrait, 0, 0, 50, 50)
   val name = Label(shifter + of.name)
   var armor = Label(shifter + s"Armor: ${of.currentArmor}")
   var statuses = Label(" Statuses: " + of.getStatuses.mkString(", "))

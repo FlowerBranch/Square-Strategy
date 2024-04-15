@@ -1,4 +1,5 @@
 NAM Johanna:
+PIC greenboy:
 HPO 1000:
 ARM 20:
 AGI 20:
@@ -6,6 +7,7 @@ ABI Pyromania, Stab, Burst:
 ---
 
 NAM Martta:
+PIC yellowboy:
 HPO 1500:
 ARM 40:
 AGI 5:
@@ -13,6 +15,7 @@ ABI Pyromania, Stab, Burst:
 ---
 
 NAM Piia:
+PIC brownboy:
 HPO 700:
 ARM 10:
 AGI 30:
@@ -20,6 +23,7 @@ ABI Pyromania, Stab, Burst:
 ---
 
 NAM Tiina:
+PIC blackboy:
 HPO 1200:
 ARM 15:
 AGI 15:

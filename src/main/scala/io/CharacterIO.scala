@@ -37,6 +37,7 @@ object CharacterIO:
       var specString = basedOn
 
       var name = ""
+      var picString = ""
       var hp = 0
       var armor = 0
       var agility = 0
@@ -45,6 +46,7 @@ object CharacterIO:
       def defineAttribute(attribute: String, value: String): Unit =
         attribute match
           case "NAM" => name = value
+          case "PIC" => picString = s"./pics/$value.png"
           case "HPO" => hp = value.toInt
           case "ARM" => armor = value.toInt
           case "AGI" => agility = value.toInt
@@ -64,7 +66,7 @@ object CharacterIO:
         specString = specString.drop(value.length + 1)
         defineAttribute(attribute, value)
 
-      Character(battle, name, hp, armor, agility, abilities)
+      Character(battle, name, picString, hp, armor, agility, abilities)
 
     end createCharacter
 

@@ -26,9 +26,4 @@ class SquareCanvas(val square: Square):
           canvas.graphicsContext2D.setFill(Grey)
           canvas.graphicsContext2D.fillRect(0, 10, canvas.width.toDouble, canvas.height.toDouble - 10)
         case c: Character =>
-          if c.battle.playerTeam.contains(c) then
-            canvas.graphicsContext2D.setFill(Blue)
-            canvas.graphicsContext2D.fillOval(0, 10, canvas.width.toDouble, canvas.height.toDouble - 10)
-          else
-            canvas.graphicsContext2D.setFill(Black)
-            canvas.graphicsContext2D.fillOval(0, 10, canvas.width.toDouble, canvas.height.toDouble - 10)
+          canvas.graphicsContext2D.drawImage(c.portrait, 0, 0, 50, 50)

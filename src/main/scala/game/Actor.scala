@@ -1,4 +1,7 @@
 package game
+import scalafx.scene.image.Image
+
+import java.io.FileInputStream
 import scala.math.*
 
 sealed trait Actor(val battle: Battle):
@@ -67,12 +70,14 @@ case class Obstacle(in: Battle) extends Actor(in):
 
 case class Character(in: Battle,
                      val name: String,
+                     portraitString: String,
                      startHP: Int,
                      private val defaultArmor: Int,
                      private val agility: Int,
                      private val abilities: Vector[Ability]
                     ) extends Actor(in):
 
+  val portrait = Image(FileInputStream(portraitString))
   val canBeMovedThrough: Boolean = false
   var turnEnded = false
   var abilityUsed = false

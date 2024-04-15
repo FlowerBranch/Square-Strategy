@@ -1,4 +1,5 @@
 NAM Jouko:
+PIC turquoiseboy:
 HPO 1000:
 ARM 20:
 AGI 20:
@@ -6,6 +7,7 @@ ABI Pyromania, Stab, Burst:
 ---
 
 NAM Marko:
+PIC darkblueboy:
 HPO 1500:
 ARM 40:
 AGI 5:
@@ -13,6 +15,7 @@ ABI Pyromania, Stab, Burst:
 ---
 
 NAM Pertti:
+PIC greyboy:
 HPO 700:
 ARM 10:
 AGI 30:
@@ -20,6 +23,7 @@ ABI Pyromania, Stab, Burst:
 ---
 
 NAM Tarmo:
+PIC orangeboy:
 HPO 1200:
 ARM 15:
 AGI 15:

@@ -25,12 +25,7 @@ class HeroDisplay(hero: Character):
   val portrait = new Canvas():
     width = 50
     height = 50
-    if hero.battle.playerTeam.contains(hero) then
-      graphicsContext2D.setFill(Blue)
-      graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
-    else
-      graphicsContext2D.setFill(Black)
-      graphicsContext2D.fillOval(0, 10, width.toDouble, height.toDouble - 10)
+    graphicsContext2D.drawImage(hero.portrait, 0, 0, 50, 50)
 
   heroBox.add(portrait, 0, 0, 1, 1)
 
