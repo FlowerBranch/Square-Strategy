@@ -5,7 +5,6 @@ import Direction.*
 class AI:
 
   private val directions = Vector(Right, Down, Left, Up)
-
   private var characterIndex = 0
   private var actionTuple: Option[(Square, Ability, Direction, Square)] = None
   private var actionIndex = 0

@@ -1,12 +1,12 @@
 package app
 
+import HelpGUI.*
 import app.Main.stage
 import game.*
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
 import scalafx.scene.Scene
-import scalafx.scene.canvas.Canvas
-import scalafx.scene.layout.{Background, ColumnConstraints, GridPane, RowConstraints, VBox}
+import scalafx.scene.layout.Background
 import scalafx.scene.paint.Color.*
 import scalafx.event.*
 import scalafx.scene.input.*
@@ -72,16 +72,38 @@ object Main extends JFXApp3:
       graphic = Circle(20, Red)
       buttonTypes = Array(ButtonType.OK)
 
-    battleEvents()
-    battle.play(drawUpdate())
+    val winningAlert = new Alert(AlertType.Confirmation):
+      initOwner(stage)
+      title = "WOOHOO!!!"
+      headerText = "You won the game and consequently life!"
+      graphic = Circle(20, Green)
+      buttonTypes = Array(ButtonType.Finish)
 
+    val losingAlert = new Alert(AlertType.Confirmation):
+      initOwner(stage)
+      title = "OH NO!!!"
+      headerText = "You die in the game you die in real life, right homies!"
+      graphic = Circle(20, Red)
+      buttonTypes = Array(ButtonType.Finish)
+
+    battleEvents()
+    battle.play(drawUpdate(), atEnd())
+
+    def atEnd(): Unit =
+      if battle.playerLost then
+        losingAlert.show()
+      else
+        winningAlert.show()
+        
     def battleEvents() =
+
       battleSquares.foreach(_.foreach(i =>
         i.canvas.handleEvent(MouseEvent.Any) {
           (me: MouseEvent) =>
             me.eventType match
 
               case MouseEvent.MouseMoved =>
+
                 if !i.square.isHighlighted then
                   i.square.highlightSwitch()
 
@@ -108,6 +130,7 @@ object Main extends JFXApp3:
                     ()
 
               case _ =>
+
                 if i.square.isHighlighted then
                   i.square.highlightSwitch()
         }
@@ -129,6 +152,7 @@ object Main extends JFXApp3:
           if heroBoxController.children.nonEmpty then
             heroBoxController.children.remove(heroBoxController.children.size - 1)
           currentHero = None
+      end updateSideBar
 
       def updateAbilityAoE() =
         if currentHero.isDefined then
@@ -138,6 +162,7 @@ object Main extends JFXApp3:
           )
         else
           ()
+      end updateAbilityAoE
 
       updateSideBar()
       battleSquares.foreach(_.foreach(i => i.redraw()))

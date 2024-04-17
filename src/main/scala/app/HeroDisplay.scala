@@ -1,12 +1,13 @@
 package app
 
 import app.Main.stage
+import HelpGUI.*
 import game.*
 import game.Direction.*
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.{Alert, Button, ButtonType, Label}
-import scalafx.scene.paint.Color.{Black, Blue, Red}
+import scalafx.scene.paint.Color.Red
 import scalafx.scene.shape.Circle
 
 class HeroDisplay(hero: Character):

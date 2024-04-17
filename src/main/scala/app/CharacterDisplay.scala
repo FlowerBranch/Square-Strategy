@@ -1,12 +1,11 @@
 package app
 
-import game.{Character, Square}
+import game.Character
 import scalafx.geometry.Insets
+import HelpGUI.*
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.control.Label
-import scalafx.scene.layout.{ColumnConstraints, GridPane, RowConstraints}
-import scalafx.scene.paint.Color.{Black, Blue, Green, Red}
-import scalafx.scene.shape.Rectangle
+import scalafx.scene.paint.Color.{Green, Red}
 
 class CharacterDisplay(of: Character):
 

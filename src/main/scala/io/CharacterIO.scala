@@ -5,7 +5,7 @@ import java.io.*
 
 object CharacterIO:
 
-  val allAbilities = Vector(Pyromania, Stab, Burst)
+  private val allAbilities = Vector(Pyromania, Stab, Burst)
 
   def readTeam(sourceFile: String, battle: Battle) =
 
@@ -23,10 +23,9 @@ object CharacterIO:
         linesIn.close()
       end try
     catch
-      case notFound: FileNotFoundException =>
-      // Response here to a failed file opening.
-      case e: IOException =>
-      // Response here to unsuccessful reading
+      case notFound: FileNotFoundException => throw FileNotFoundException("Couldn't find file")
+      case e: IOException => throw IOException("Encountered problem while reading from file")
+
     fileAsString = fileAsString.filter(_ != ' ')
     val characterStrings = fileAsString.split("---")
     if characterStrings.size != 4 then

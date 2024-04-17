@@ -1,6 +1,6 @@
 package game
-import scalafx.scene.image.Image
 
+import scalafx.scene.image.Image
 import java.io.FileInputStream
 import scala.math.*
 
@@ -78,7 +78,7 @@ case class Character(in: Battle,
                     ) extends Actor(in):
 
   val portrait = Image(FileInputStream(portraitString))
-  val canBeMovedThrough: Boolean = false
+  val canBeMovedThrough = false
   var turnEnded = false
   var abilityUsed = false
   var armorChange = 0
@@ -106,7 +106,7 @@ case class Character(in: Battle,
   
   def getAgility = this.turnAgility
 
-  def isStuck = this.turnAgility == 0
+  private def isStuck = this.turnAgility == 0
   
   def turnIsOver = this.turnEnded || this.isDown || (this.isStuck && this.abilityUsed)
   
@@ -116,9 +116,6 @@ case class Character(in: Battle,
 
   def takeDamage(amount: Int) =
     hp = max(hp - max(0, amount - currentArmor), 0)
-
-  def healDamage(amount: Int) =
-    hp = min(hp + amount, maxHP)
 
   def currentArmor = defaultArmor + armorChange
 

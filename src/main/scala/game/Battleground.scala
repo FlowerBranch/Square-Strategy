@@ -1,7 +1,6 @@
 package game
 
 import scala.collection.mutable.Buffer
-import game.Direction.*
 
 class Battleground(val width: Int, val height: Int):
 
@@ -13,23 +12,23 @@ class Battleground(val width: Int, val height: Int):
   var lockedSquare: Option[Square] = None
   var movementRadius: Option[Vector[(Square, Int)]] = None
 
+  def getSquare(x: Int, y: Int): Option[Square] =
+    this.area.flatMap(_.find(i =>
+      i.x == x && i.y == y
+    )).headOption
+  
   def getCurrentRadius: Vector[Square] =
     if movementRadius.isDefined then
       movementRadius.head.map(_._1)
     else
       Vector()
 
-  def getSquare(x: Int, y: Int): Option[Square] =
-    this.area.flatMap(_.find(i =>
-      i.x == x && i.y == y
-    )).headOption
-
   def squaresWithinRadius(of: Square, depth: Int): Vector[(Square, Int)] =
 
     val usedSquares = Buffer[Square]()
 
     def squaresForNextDepth(squares: Vector[Square]): Vector[Square] =
-      squares.flatMap(i => i.emptyNeighbors.filterNot(i => usedSquares.contains(i))).distinct
+      squares.flatMap(i => i.emptyNonDiagonalNeighbors.filterNot(i => usedSquares.contains(i))).distinct
 
     def squaresUntilDepth(omstart: (Vector[Square], Int)): Vector[(Square, Int)] =
       val thisDepth = omstart._1 zip Vector.tabulate(omstart._1.size)(i => omstart._2)
@@ -53,7 +52,7 @@ class Battleground(val width: Int, val height: Int):
         Vector(from._1)
       else
         val lowerDepthRadius = radius.filter(_._2 == from._2 - 1)
-        Vector(from._1) ++ moveToOrigin(lowerDepthRadius.find(p => from._1.emptyNeighbors.contains(p._1)).head)
+        Vector(from._1) ++ moveToOrigin(lowerDepthRadius.find(p => from._1.emptyNonDiagonalNeighbors.contains(p._1)).head)
 
     val origin = radius.find(_._1 == end)
     if origin.isDefined then

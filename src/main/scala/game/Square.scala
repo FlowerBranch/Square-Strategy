@@ -56,8 +56,7 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
       Vector()
     else
       Vector(nextSquare.head) ++ nextSquare.head.squaresInDirection(amount - 1, direction)
-      
-  
+     
   def yDirectionOf(another: Square): Option[Direction] =
     if this.y < another.y then
       Some(Down)
@@ -81,17 +80,17 @@ case class Square(val x: Int, val y: Int, val battleground: Battleground):
            this.battleground.getSquare(this.x, this.y + 1)
     ).flatten
 
-  def allNeighbors: Vector[Square] =
+  def allNeighborsAndSelf: Vector[Square] =
   Vector(this.battleground.getSquare(this.x - 1, this.y - 1), this.battleground.getSquare(this.x, this.y - 1), this.battleground.getSquare(this.x + 1, this.y - 1),
          this.battleground.getSquare(this.x - 1, this.y),     this.battleground.getSquare(this.x, this.y),     this.battleground.getSquare(this.x + 1, this.y),
          this.battleground.getSquare(this.x - 1, this.y + 1), this.battleground.getSquare(this.x, this.y + 1), this.battleground.getSquare(this.x + 1, this.y + 1)
   ).flatten
     
-  def emptyNeighbors =
+  def emptyNonDiagonalNeighbors =
     nonDiagonalNeighbors.filter(i => i.isEmpty)
     
-  def emptyNeighborsExcluding(squares: Vector[Square]) =
-    emptyNeighbors.filterNot(squares.contains(_))
+  def emptyNonDiagonalNeighborsExcluding(squares: Vector[Square]) =
+    emptyNonDiagonalNeighbors.filterNot(squares.contains(_))
 
   def distanceTo(another: Square) =
     sqrt(pow(abs(another.x - this.x), 2) + pow(abs(another.y - this.y), 2))

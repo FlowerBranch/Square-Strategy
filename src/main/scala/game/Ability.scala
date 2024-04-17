@@ -6,9 +6,11 @@ sealed trait Ability:
 
   val name: String
   val pushDistance: Int
-  def status: Option[Statuseffect]
+  
   val directions = Vector(Right, Down, Left, Up)
 
+  def status: Option[Statuseffect]
+  
   def areaOfEffect(square: Square, direction: Direction): Vector[Square]
 
   def use(user: Actor, direction: Direction): Unit
@@ -58,8 +60,7 @@ sealed trait Ability:
 
   end useWithParams
 
-
-  def calculateDamageHelper(square: Square, user: Character, userDamage: Int, otherDamage: Int): (Square, Direction, Int) =
+  def calculateDamageWithParams(square: Square, user: Character, userDamage: Int, otherDamage: Int): (Square, Direction, Int) =
 
     def calculateScore(target: Square): Int =
 
@@ -104,7 +105,9 @@ sealed trait Ability:
     val max = possibleDamage.maxBy(p => p._2)
     (square, max._1, max._2)
 
-  end calculateDamageHelper
+  end calculateDamageWithParams
+
+end Ability
 
 object Pyromania extends Ability:
 
@@ -113,13 +116,13 @@ object Pyromania extends Ability:
   def status = Some(Burn(2))
 
   def areaOfEffect(square: Square, direction: Direction) =
-    square.allNeighbors.flatMap(_.allNeighbors).distinct
+    square.allNeighborsAndSelf.flatMap(_.allNeighborsAndSelf).distinct
 
   def use(user: Actor, direction: Direction): Unit =
     useWithParams(user, direction, 30, 100)
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
-    calculateDamageHelper(square, user, 30, 100)
+    calculateDamageWithParams(square, user, 30, 100)
 
 object Stab extends Ability:
 
@@ -134,7 +137,7 @@ object Stab extends Ability:
     useWithParams(user, direction, 0, 120)
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
-    super.calculateDamageHelper(square, user, 0, 120)
+    super.calculateDamageWithParams(square, user, 0, 120)
 
 object Burst extends Ability:
 
@@ -149,4 +152,4 @@ object Burst extends Ability:
     useWithParams(user, direction, 0, 150)
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
-    super.calculateDamageHelper(square, user, 0, 150)
+    super.calculateDamageWithParams(square, user, 0, 150)

@@ -2,7 +2,7 @@ package app
 
 import game.*
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
-import scalafx.scene.paint.Color.{Black, Blue, Brown, Green, Grey, LightBlue, Red, Yellow}
+import scalafx.scene.paint.Color.{Brown, Grey, LightBlue, Yellow}
 
 class SquareCanvas(val square: Square):
 
