@@ -3,6 +3,8 @@ package io
 import game.*
 import java.io.*
 
+class CorruptedCharacterFileException(message: String) extends Exception(message)
+  
 object CharacterIO:
 
   private val allAbilities = Vector(Pyromania, Stab, Burst)
@@ -29,7 +31,7 @@ object CharacterIO:
     fileAsString = fileAsString.filter(_ != ' ')
     val characterStrings = fileAsString.split("---")
     if characterStrings.size != 4 then
-      throw Exception("Corrupted character file, could not create 4 characters")
+      throw CorruptedCharacterFileException("Corrupted character file, could not create 4 characters")
 
     def createCharacter(basedOn: String): Character =
 
@@ -54,8 +56,8 @@ object CharacterIO:
              if abilitiesToBe.length == 3 && abilitiesToBe.forall(_.isDefined) then
                abilities = abilitiesToBe.map(_.head).toVector
              else
-               throw Exception("Character abilities were incorrectly defined in source file")
-          case _     => throw Exception("Couldn't define attribute based on character file")
+               throw CorruptedCharacterFileException("Character abilities were incorrectly defined in source file")
+          case _     => throw CorruptedCharacterFileException("Couldn't define attribute based on character file")
       end defineAttribute
 
       while specString.nonEmpty do
