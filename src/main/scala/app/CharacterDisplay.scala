@@ -7,6 +7,10 @@ import scalafx.scene.canvas.Canvas
 import scalafx.scene.control.Label
 import scalafx.scene.paint.Color.{Green, Red}
 
+/**
+ * Contains the most important information about a character and condenses it to a small window
+ * @param of character that the display is based on
+ */
 class CharacterDisplay(of: Character):
 
   val characterBox = makeGrid(2, 4)
@@ -32,6 +36,11 @@ class CharacterDisplay(of: Character):
   characterBox.add(armor, 1, 1, 1, 1)
   characterBox.add(statuses, 0, 2, 2, 1)
   characterBox.add(healthBar, 0, 3, 2, 1)
+
+  /**
+   * Updates the information of the character based on values in internal logic.
+   * Is called every frame
+   */
   def update() =
     if characterBox.children.nonEmpty then
       characterBox.children.remove(0, characterBox.children.size - 1)

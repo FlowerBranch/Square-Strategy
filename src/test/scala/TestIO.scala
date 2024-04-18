@@ -3,6 +3,9 @@ import io.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
+/**
+ * Class for testing file reading and extracting information from said files
+ */
 class TestIO extends AnyFlatSpec with Matchers:
   
   private val battle = Battle()

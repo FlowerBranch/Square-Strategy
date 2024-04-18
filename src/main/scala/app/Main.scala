@@ -5,7 +5,7 @@ import app.Main.stage
 import game.*
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
-import scalafx.scene.Scene
+import scalafx.scene.{Scene, control}
 import scalafx.scene.layout.Background
 import scalafx.scene.paint.Color.*
 import scalafx.event.*
@@ -15,6 +15,10 @@ import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.shape.Circle
 
+/**
+ * Is used to start the app.
+ * Contains some key methods and variables that control elements on the GUI
+ */
 object Main extends JFXApp3:
 
   def start() =
@@ -77,24 +81,37 @@ object Main extends JFXApp3:
       title = "WOOHOO!!!"
       headerText = "You won the game and consequently life!"
       graphic = Circle(20, Green)
-      buttonTypes = Array(ButtonType.Finish)
+      buttonTypes = Array(ButtonType.OK)
 
     val losingAlert = new Alert(AlertType.Confirmation):
       initOwner(stage)
       title = "OH NO!!!"
-      headerText = "You die in the game you die in real life, right homies!"
+      headerText = "You die in the game you die in real life, am I right gamers!"
       graphic = Circle(20, Red)
-      buttonTypes = Array(ButtonType.Finish)
+      buttonTypes = Array(ButtonType.OK)
+
+    val stopButton = new Button("Stop App"):
+      onAction = (event) =>
+        System.exit(0)
 
     battleEvents()
     battle.play(drawUpdate(), atEnd())
 
+    /**
+     * Is called when either team has won.
+     * Creates a button that can be clicked to close the app
+     */
     def atEnd(): Unit =
       if battle.playerLost then
         losingAlert.show()
       else
         winningAlert.show()
-        
+      infoBox.add(stopButton, 0, 2, 1, 1)
+    end atEnd
+
+    /**
+     * Creates event handlers for all the squares (or canvases) on the battleground
+     */
     def battleEvents() =
 
       battleSquares.foreach(_.foreach(i =>
@@ -137,6 +154,9 @@ object Main extends JFXApp3:
       ))
     end battleEvents
 
+    /**
+     * Calls different parts of the GUI to draw the window every frame based on internal logic
+     */
     def drawUpdate() =
 
       def updateSideBar() =

@@ -10,11 +10,19 @@ import scalafx.scene.control.{Alert, Button, ButtonType, Label}
 import scalafx.scene.paint.Color.Red
 import scalafx.scene.shape.Circle
 
+/**
+ * Contains elements with which the player may interact with a selected character.
+ * This includes using abilities and ending the turn
+ * @param hero character that the elements will be based off of
+ */
 class HeroDisplay(hero: Character):
 
   val directions = Vector(Right, Down, Left, Up).zipWithIndex
   var currentArea = Vector[Square]()
 
+  /**
+   * Used to reset some elements when it's required
+   */
   def emptyTime() =
     currentArea = Vector()
     hero.battle.battleground.lockedSquare.head.lockSwitch()
@@ -59,6 +67,11 @@ class HeroDisplay(hero: Character):
   heroBox.add(useButtonHandler, 2, 1, 2, 2)
   heroBox.add(rotateButtonHandler, 1, 3, 1, 1)
 
+  /**
+   * Creates a button that may be used to select an ability.
+   * When clicked creates buttons for rotating the area of effect and actually using the ability
+   * @param of ability that the elements will control
+   */
   def makeAbilityButton(of: Ability) =
     val button = new Button(of.name):
       onAction = (event) =>

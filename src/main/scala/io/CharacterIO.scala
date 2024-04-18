@@ -3,8 +3,15 @@ package io
 import game.*
 import java.io.*
 
+/**
+ * Class to help differentiate between exceptions mainly for testing purposes
+ * @param message Text displayed by exception
+ */
 class CorruptedCharacterFileException(message: String) extends Exception(message)
-  
+
+/**
+ * Object to read character information from external files
+ */
 object CharacterIO:
 
   private val allAbilities = Vector(Pyromania, Stab, Burst)
@@ -34,9 +41,10 @@ object CharacterIO:
       throw CorruptedCharacterFileException("Corrupted character file, could not create 4 characters")
 
     def createCharacter(basedOn: String): Character =
+    //returns one character with all parameters set
 
       var specString = basedOn
-
+      
       var name = ""
       var picString = ""
       var hp = 0
@@ -45,6 +53,7 @@ object CharacterIO:
       var abilities = Vector[Ability]()
 
       def defineAttribute(attribute: String, value: String): Unit =
+      //takes in an identifier for one character attribute and applies given value to that attribute
         attribute match
           case "NAM" => name = value
           case "PIC" => picString = s"./pics/$value.png"

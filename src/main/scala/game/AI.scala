@@ -2,6 +2,9 @@ package game
 
 import Direction.*
 
+/**
+ * An instance of this class will control the enemy characters during its turn
+ */
 class AI:
 
   private val directions = Vector(Right, Down, Left, Up)
@@ -11,15 +14,23 @@ class AI:
   private var outOfReach = false
 
   private def getAway(character: Character): Square =
+  //This method will be used when a character either has nothing to use an ability or has already used its ability.
+  //It tries to get as far away as possible from the characters in the players team.
     val radius = character.battle.battleground.squaresWithinRadius(character.location.head, character.getAgility)
     val square = radius.maxBy(i => character.battle.playerTeam.filter(!_.isDown).map(j => j.location.head.distanceTo(i._1)).sum)._1
     square
 
   private def moveCharacter(character: Character, to: Square): Unit =
+  //Equivalent for the player clicking a character and moving it to a square but for the use of the AI
     val radius = character.battle.battleground.squaresWithinRadius(character.location.head, character.getAgility)
     val path = character.battle.battleground.squaresAlongPath(to, radius)
     character.battle.enemyTeam(characterIndex).onTheMove = path
 
+  /**
+   * The main method for the AI to perform its turn which is taken a single action at a time to improve visual effect.
+   * First all the actions for one characters full turn will be calculated and then the turn is taken. 
+   * @param in the battle in which this AI controls the enemy team
+   */
   def nextAction(in: Battle) =
 
     if in.enemyTeam.forall(_.onTheMove.isEmpty) then
@@ -27,6 +38,7 @@ class AI:
       val currentCharacter = in.enemyTeam(characterIndex)
 
       def reset() =
+      //this prepares the AI for the next character and the next turn
         actionIndex = 0
         if characterIndex >= 3 then
           characterIndex = 0
@@ -39,7 +51,7 @@ class AI:
         if actionTuple.isDefined then
   
           val actions = actionTuple.head
-          actionIndex match
+          actionIndex match //here first the character moves to the square it'll attack from, then attacks, then moves away
             case 0 =>
               moveCharacter(currentCharacter, actions._1)
               actionIndex += 1
@@ -70,11 +82,12 @@ class AI:
       ()
 
     def defineActions(of: Character): Option[(Square, Ability, Direction, Square)] =
-
+    //this method calculates the whole turn for the AI
       val radius = in.battleground.squaresWithinRadius(of.location.head, of.getAgility)
       val possibleSquares = radius.map(_._1)
 
       def calculateForAbility(ability: Ability): Option[(Square, Ability, Direction, Int)] =
+      //this calculates the optimal use of one ability
         val relevantSquares = (in.playerTeam.filter(!_.isDown) ++ in.obstacles).map(_.location.head)
         val abilitySquares = relevantSquares.flatMap(i => directions.flatMap(j => ability.areaOfEffect(i, j)).distinct).distinct
         val squaresToTest = possibleSquares.filter(i => abilitySquares.contains(i) && !relevantSquares.contains(i))

@@ -2,6 +2,10 @@ package game
 
 import Direction.*
 
+/**
+ * Describes an ability that may do different things such as dealing damage to the target or applying a status
+ * Each ability also has their own area of effect that might depend on the direction of useage
+ */
 sealed trait Ability:
 
   val name: String
@@ -17,6 +21,13 @@ sealed trait Ability:
 
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int)
 
+  /**
+   * Moves target a specified distance without reducing its agility
+   * @param actor target
+   * @param user user of ability
+   * @param distance max push distance
+   * @param useDirection direction that the ability is used in
+   */
   def push(actor: Actor, user: Actor, distance: Int, useDirection: Direction): Unit =
 
     def startPushing(in: Direction) =
@@ -34,11 +45,18 @@ sealed trait Ability:
     else
       ()
 
+  /**
+   * Method to simplify the implementation of new abilities
+   * @param user user of ability
+   * @param direction use direction
+   * @param userDamage damage that the user takes if affected
+   * @param otherDamage damage that every other character (including teammates) takes
+   */
   def useWithParams(user: Actor, direction: Direction, userDamage: Int, otherDamage: Int) =
     areaOfEffect(user.location.head, direction).filter(!_.isEmpty).map(_.getActor.head).foreach(handleActor(_))
 
     def handleActor(actor: Actor) =
-
+    //handles all necessary functions for target of attack like damage, applied statuses and pushing
       if actor == user then
         actor.takeDamage(userDamage)
       else
@@ -60,11 +78,21 @@ sealed trait Ability:
 
   end useWithParams
 
+  /**
+   * Used by the AI to calculate best option for using ability.
+   * Calculates a score for given square which the AI then compares to other scores
+   * Returns a tuple with the square, the direction of usage which had the highest score and the score itself
+   * @param square current square under examination
+   * @param user user of ability
+   * @param userDamage damage that the user takes if it would be affected
+   * @param otherDamage damage that every other character (including teammates) would take
+   */
   def calculateDamageWithParams(square: Square, user: Character, userDamage: Int, otherDamage: Int): (Square, Direction, Int) =
 
     def calculateScore(target: Square): Int =
 
       def statusScore: Int =
+      //statuses have an impact of 50 on the square
         if this.status.isDefined then
           if this.status.head.isNegative then
             50
@@ -90,6 +118,7 @@ sealed trait Ability:
           score += -statusScore - userDamage
 
       if !target.isEmpty && this.pushDistance != 0 then
+      //pushing a character or an object has an effect on 10
         score += 10
 
       score
@@ -109,6 +138,10 @@ sealed trait Ability:
 
 end Ability
 
+/**
+ * Ability that deals a little damage to the user and more to all others in a two square radius
+ * Applies burn status to all affected (including user)
+ */
 object Pyromania extends Ability:
 
   val name = "Pyromania"
@@ -124,6 +157,10 @@ object Pyromania extends Ability:
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
     calculateDamageWithParams(square, user, 30, 100)
 
+/**
+ * Ability that affects only the square directly in front of user.
+ * Deals a lot of damage and applies bleeding status to target
+ */
 object Stab extends Ability:
 
   val name = "Stab"
@@ -139,6 +176,10 @@ object Stab extends Ability:
   def calculateDamage(square: Square, user: Character): (Square, Direction, Int) =
     super.calculateDamageWithParams(square, user, 0, 120)
 
+/**
+ * Ability that affects all non diagonal squares around user.
+ * Deals a lot of damage and pushes each object and character affected two squares back if possible
+ */
 object Burst extends Ability:
 
   val name = "Burst"

@@ -4,12 +4,20 @@ import game.*
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.paint.Color.{Brown, Grey, LightBlue, Yellow}
 
+/**
+ * Is responsible for drawing the content of one square on the GUI.
+ * @param square square that the end result of the drawing is based on
+ */
 class SquareCanvas(val square: Square):
 
   val canvas = new Canvas():
     width = 50
     height = 50
 
+  /**
+   * Redraws the square with possibly updated parameters.
+   * Is called every frame for each square
+   */
   def redraw() =
     if square.isHighlighted || square.isLocked then
       canvas.graphicsContext2D.setFill(Yellow)

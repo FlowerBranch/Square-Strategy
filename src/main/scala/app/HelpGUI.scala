@@ -5,8 +5,16 @@ import scalafx.scene.canvas.Canvas
 import scalafx.scene.layout.{ColumnConstraints, GridPane, RowConstraints}
 import scalafx.scene.paint.Color.Black
 
+/**
+ * Contains methods that are more or less essential to the GUI
+ */
 object HelpGUI:
-  
+
+  /**
+   * Returns an evenly spaced grid of given dimensions
+   * @param ofDimX width
+   * @param ofDimY height
+   */
   def makeGrid(ofDimX: Int, ofDimY: Int) =
   
     val grid = GridPane()
@@ -28,7 +36,11 @@ object HelpGUI:
     grid
     
   end makeGrid
-  
+
+  /**
+   * Creates backround for the app and adds it to the root
+   * @param root root node
+   */
   def constructBackground(root: GridPane) =
   
     val backdrop = new Canvas():
@@ -40,7 +52,10 @@ object HelpGUI:
     root.add(backdrop, 0, 0, 2, 1)
   
   end constructBackground
-  
+
+  /**
+   * Returns a grid that acts as the root node for the whole GUI
+   */
   def makeRoot: GridPane =
   
     val root = new GridPane():
@@ -62,7 +77,12 @@ object HelpGUI:
     root
   
   end makeRoot
-  
+
+  /**
+   * Returns elements containing information about a given team of characters and adds the to a given parent node
+   * @param teamBox parent node
+   * @param team vector of characters that elements will be based on
+   */
   def makeCharacterBoxes(teamBox: GridPane, team: Vector[Character]): Vector[CharacterDisplay] =
     val characterBoxes = team.map(CharacterDisplay(_))
   
